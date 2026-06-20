@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📻 Morse Center</title>
+<style>
+:root{--bg:#0a0a0a;--pn:#161616;--bd:#2a2a2a;--tx:#c8c8c8;--ac:#f0c040;--mo:#4fc3f7;--st:#4caf50;--rc:#ff9800;--pm:#ff69b4;--sc:#00ff88;--mu:#e91e63}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:10px;transition:background .08s}
+body.flash{background:#fff}
+.c{background:var(--pn);border-radius:12px;padding:16px 20px;width:100%;max-width:850px;box-shadow:0 20px 60px rgba(0,0,0,.7);border:1px solid var(--bd)}
+.hd{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.hd h1{font-size:1.1rem;color:var(--ac);letter-spacing:3px}
+.mt{display:flex;border:1px solid var(--bd);border-radius:5px;overflow:hidden}
+.mtb{padding:5px 10px;background:#111;color:#666;border:none;cursor:pointer;font-family:inherit;font-size:.58rem;letter-spacing:2px;font-weight:bold;transition:.3s}
+.mtb.act{background:var(--ac);color:#000}
+.name-row{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.name-row input{padding:4px 8px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.6rem;width:130px}
+.name-row button{padding:4px 8px;background:var(--ac);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.55rem;font-weight:bold}
+.sb{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:5px 8px;background:#0f0f0f;border-radius:5px;border:1px solid #1a1a1a;font-size:.5rem}
+.sd{width:7px;height:7px;border-radius:50%;background:#333;flex-shrink:0}
+.sd.cn{background:#4caf50;box-shadow:0 0 6px #4caf50;animation:pu 2s infinite}
+.sd.tx{background:#ff9800;box-shadow:0 0 10px #ff9800;animation:pu .5s infinite}
+.sd.rx{background:#4fc3f7;box-shadow:0 0 10px #4fc3f7;animation:pu .3s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.35}}
+.stx{flex:1;color:#666}.stx.cn{color:#4caf50}
+.lt{width:24px;height:24px;border-radius:50%;background:#1a1a1a;border:2px solid #333;transition:background .04s;flex-shrink:0}
+.lt.on{background:#fff;box-shadow:0 0 20px #fff,0 0 35px #ff9800;border-color:#ff9800}
+.sc{display:none}.sc.act{display:block}
+.cl{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:7px;height:250px;overflow-y:auto;padding:8px;margin-bottom:6px;font-size:.6rem;line-height:1.4}
+.cl::-webkit-scrollbar{width:3px}.cl::-webkit-scrollbar-track{background:#0a0a0a}.cl::-webkit-scrollbar-thumb{background:#2a2a2a}
+.msg{margin-bottom:3px;padding:3px 6px;border-radius:4px;animation:fi .3s}
+@keyframes fi{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+.ms{background:#0a1a0a;border-left:2px solid var(--st)}.mr{background:#1a0a00;border-left:2px solid var(--rc)}.mp{background:#1a0020;border-left:2px solid var(--pm)}.my{background:0;border:none;text-align:center;color:#444;font-style:italic;font-size:.5rem}
+.ml{font-size:.45rem;letter-spacing:2px;opacity:.7}.ms .ml{color:var(--st)}.mr .ml{color:var(--rc)}.mp .ml{color:var(--pm)}
+.mm{color:var(--mo);letter-spacing:2px;font-size:.5rem}.mtx{color:#ddd}
+.cr{display:flex;gap:5px;margin-bottom:5px}
+.cr input{flex:1;padding:6px 8px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.7rem}
+.cr input:focus{outline:none;border-color:var(--ac)}
+.bs{padding:6px 10px;background:var(--st);color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:bold;letter-spacing:2px;font-size:.6rem}
+textarea{width:100%;padding:8px;border-radius:5px;border:1px solid #2a2a2a;background:#0f0f0f;color:var(--ac);font-family:inherit;font-size:.75rem;resize:vertical;min-height:65px;margin-bottom:6px}
+textarea:focus{outline:none;border-color:var(--ac)}
+.ob{background:#0a0a0a;padding:8px;border-radius:5px;min-height:38px;word-wrap:break-word;font-size:.85rem;letter-spacing:2px;color:var(--mo);border:1px solid #1a1a1a;line-height:1.5;margin-bottom:6px}
+.ob.em{color:#333;font-style:italic;font-size:.7rem}
+.ctr{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:2px}
+button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-weight:bold;letter-spacing:1px;font-size:.55rem;transition:.3s;white-space:nowrap}
+.bp{background:#4caf50;color:#fff}.bst{background:#f44336;color:#fff}.bf{background:#ff9800;color:#000}.bc{background:#2196F3;color:#fff}.bw{background:#9c27b0;color:#fff}.bcl{background:#444;color:#fff}.bsw{background:#607d8b;color:#fff}.bts{background:#ff5722;color:#fff}
+.bmu{background:#333;color:#aaa;border:1px solid #444}.bmu.mu{background:var(--mu);color:#fff}
+.bsc{background:#003320;color:var(--sc);border:1px solid var(--sc)}
+.sg{display:flex;align-items:center;gap:3px;color:#777;font-size:.5rem}
+.sg input[type=range]{width:50px;accent-color:var(--ac)}.sg span{min-width:28px;font-size:.45rem}
+.sm{text-align:center;font-size:.55rem;color:#444;min-height:10px;margin-top:2px}
+.sk{text-align:center;font-size:.45rem;color:#2a2a2a;margin-top:2px}
+.kb{background:#0f0f0f;border:1px solid #1a1a1a;border-radius:8px;padding:10px;margin-bottom:8px;display:none}
+.kb.vi{display:block}
+.kb-row{display:flex;gap:4px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
+.kb-key{width:36px;height:36px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;color:var(--tx);font-family:inherit;font-size:.62rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.kb-key:hover{background:#2a2a2a;border-color:var(--ac);color:var(--ac)}
+.kb-key .km{font-size:.48rem;color:var(--mo)}
+.kb-key.space{width:110px}.kb-key.back{width:50px}.kb-key.enter{width:50px}
+#sp{display:none;background:#001a0f;border:1px solid var(--sc);border-radius:10px;padding:14px;margin-top:8px}
+#sp.vi{display:block}
+.stt{color:var(--sc);letter-spacing:3px;font-size:.65rem;text-align:center;margin-bottom:6px}
+.sr{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+.sr input[type=file]{color:var(--sc);font-family:inherit;font-size:.55rem}
+.sr input[type=file]::file-selector-button{background:#003320;color:var(--sc);border:1px solid var(--sc);padding:2px 7px;border-radius:3px;cursor:pointer;font-family:inherit;margin-right:5px;font-size:.5rem}
+.spb{height:3px;background:#0a0a0a;border-radius:2px;overflow:hidden;margin-bottom:4px}
+.spf{height:100%;background:var(--sc);width:0%}
+.sif{font-size:.5rem;color:#006640;text-align:center}
+.spl{width:100%;margin-top:6px;display:none;border-radius:6px;max-height:200px}
+.spl.shw{display:block}
+.pvw{background:#0a0a0a;border:1px solid #2a2a2a;border-radius:6px;padding:8px;margin-top:6px;display:none}
+.pvw.vi{display:block}
+.pvw-title{color:var(--sc);font-size:.55rem;letter-spacing:2px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="c">
+<div class="hd"><h1>📻 MORSE CENTER</h1>
+<div class="mt"><button class="mtb act" id="btnt">🔤 TRANSLATOR</button><button class="mtb" id="btnc">💬 CHAT</button></div>
+</div>
+
+<div class="name-row"><span style="color:#666;font-size:.5rem;">Name:</span><input type="text" id="nameInput" placeholder="Your name..." maxlength="20"><button id="btnSetName">Set</button><span id="nameDisplay" style="color:var(--ac);font-size:.55rem;margin-left:8px;"></span></div>
+
+<div class="sb"><div class="sd" id="sdot"></div><span class="stx" id="stxt">Connecting...</span><button class="bmu" id="btnMute">🔊</button><button class="bsc" id="btnKb">⌨️</button><div class="lt" id="light"></div></div>
+
+<!-- KEYBOARD -->
+<div class="kb" id="keyboard">
+<div class="kb-row"><button class="kb-key" data-char="A">A<span class="km">.-</span></button><button class="kb-key" data-char="B">B<span class="km">-...</span></button><button class="kb-key" data-char="C">C<span class="km">-.-.</span></button><button class="kb-key" data-char="D">D<span class="km">-..</span></button><button class="kb-key" data-char="E">E<span class="km">.</span></button><button class="kb-key" data-char="F">F<span class="km">..-.</span></button><button class="kb-key" data-char="G">G<span class="km">--.</span></button><button class="kb-key" data-char="H">H<span class="km">....</span></button><button class="kb-key" data-char="I">I<span class="km">..</span></button><button class="kb-key" data-char="J">J<span class="km">.---</span></button></div>
+<div class="kb-row"><button class="kb-key" data-char="K">K<span class="km">-.-</span></button><button class="kb-key" data-char="L">L<span class="km">.-..</span></button><button class="kb-key" data-char="M">M<span class="km">--</span></button><button class="kb-key" data-char="N">N<span class="km">-.</span></button><button class="kb-key" data-char="O">O<span class="km">---</span></button><button class="kb-key" data-char="P">P<span class="km">.--.</span></button><button class="kb-key" data-char="Q">Q<span class="km">--.-</span></button><button class="kb-key" data-char="R">R<span class="km">.-.</span></button><button class="kb-key" data-char="S">S<span class="km">...</span></button><button class="kb-key" data-char="T">T<span class="km">-</span></button></div>
+<div class="kb-row"><button class="kb-key" data-char="U">U<span class="km">..-</span></button><button class="kb-key" data-char="V">V<span class="km">...-</span></button><button class="kb-key" data-char="W">W<span class="km">.--</span></button><button class="kb-key" data-char="X">X<span class="km">-..-</span></button><button class="kb-key" data-char="Y">Y<span class="km">-.--</span></button><button class="kb-key" data-char="Z">Z<span class="km">--..</span></button><button class="kb-key" data-char="1">1<span class="km">.----</span></button><button class="kb-key" data-char="2">2<span class="km">..---</span></button><button class="kb-key" data-char="3">3<span class="km">...--</span></button><button class="kb-key" data-char="4">4<span class="km">....-</span></button></div>
+<div class="kb-row"><button class="kb-key" data-char="5">5<span class="km">.....</span></button><button class="kb-key" data-char="6">6<span class="km">-....</span></button><button class="kb-key" data-char="7">7<span class="km">--...</span></button><button class="kb-key" data-char="8">8<span class="km">---..</span></button><button class="kb-key" data-char="9">9<span class="km">----.</span></button><button class="kb-key" data-char="0">0<span class="km">-----</span></button><button class="kb-key" data-char=".">.<span class="km">.-.-.-</span></button><button class="kb-key" data-char=",">,<span class="km">--..--</span></button><button class="kb-key" data-char="?">?<span class="km">..--..</span></button><button class="kb-key" data-char="!">!<span class="km">-.-.--</span></button></div>
+<div class="kb-row"><button class="kb-key space" data-char=" ">SPACE</button><button class="kb-key back" data-char="BACK">⌫</button><button class="kb-key enter" data-char="ENTER">⏎</button></div>
+</div>
+
+<!-- TRANSLATOR -->
+<div class="sc act" id="secT">
+<textarea id="txtIn" placeholder="Type or paste here..."></textarea>
+<div class="ob em" id="outBox">Morse code appears here...</div>
+<div class="ctr"><button class="bp" id="btnPlay">▶ Play</button><button class="bst" id="btnStop">■ Stop</button><button class="bf" id="btnFlash">💡 Flash</button><button class="bc" id="btnCopy">📋 Copy</button><button class="bw" id="btnWav">💾 WAV</button><button class="bsw" id="btnSwap">↔ Swap</button></div>
+<div class="ctr"><div class="sg">WPM:<input type="range" id="spdS" min="5" max="35" value="18"><span id="spdL">18</span></div><div class="sg">Hz:<input type="range" id="freqS" min="400" max="1200" value="700"><span id="freqL">700</span></div></div>
+</div>
+
+<!-- CHAT -->
+<div class="sc" id="secC">
+<div class="cl" id="chatLog"><div class="my">📡 Connecting...</div></div>
+<div class="cr"><input type="text" id="chatIn" placeholder="Type message... (Enter to send)" maxlength="300"><button class="bs" id="btnChatSend">▶ SEND</button></div>
+<div class="ctr"><button class="bcl" id="btnChatClear">🗑 Clear</button><button class="bts" id="btnTest">📡 Test</button></div>
+<div class="sm" id="cStat"></div>
+</div>
+<div class="sk"><kbd>Ctrl+K</kbd> Keyboard | <kbd>Ctrl+M</kbd> Mute</div>
+</div>
+
+<script>
+// MORSE MAP
+const MP={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..","0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--"," ":"/"};
+const RM={};for(const[k,v]of Object.entries(MP))RM[v]=k;
+
+// STATE
+let wpm=18,freq=700,ctx=null,playing=false,tmr=null,mode='trans',muted=false,kbVis=false,myId=0,myName='',connected=false,ws=null;
+const $=id=>document.getElementById(id);
+
+// AUDIO
+function iA(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume()}
+function tone(d){return new Promise(r=>{if(!ctx||!playing||muted){r();return}const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime);const t=ctx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5,t+.003);g.gain.setValueAtTime(.5,t+d-.003);g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d);o.onended=()=>r()})}
+function slp(ms){return new Promise(r=>{tmr=setTimeout(r,ms)})}
+function lOn(){$('light').classList.add('on')}function lOff(){$('light').classList.remove('on')}
+
+// MUTE
+function togMute(){muted=!muted;$('btnMute').textContent=muted?'🔇':'🔊';$('btnMute').classList.toggle('mu',muted)}
+$('btnMute').addEventListener('click',togMute);
+
+// KEYBOARD
+function togKb(){kbVis=!kbVis;$('keyboard').classList.toggle('vi',kbVis)}
+$('btnKb').addEventListener('click',togKb);
+document.querySelectorAll('.kb-key').forEach(k=>{k.addEventListener('click',()=>{const c=k.dataset.char;const el=mode==='chat'?$('chatIn'):$('txtIn');if(c==='BACK')el.value=el.value.slice(0,-1);else if(c==='ENTER'){if(mode==='chat')sendChat();else el.value+='\n'}else if(c===' ')el.value+=' ';else el.value+=c;el.focus();if(mode==='trans')upT()})});
+
+// PLAYBACK
+async function playMS(str,fo=false){
+if(!str||!str.trim())return;iA();playing=!fo;
+const dot=1200/wpm,dash=dot*3,sG=dot,lG=dot*3,wG=dot*7;
+for(const c of str){if(!playing)break;
+if(c==='.'){lOn();if(!fo)await tone(dot/1000);else await slp(dot);lOff()}
+else if(c==='-'){lOn();if(!fo)await tone(dash/1000);else await slp(dash);lOff()}
+else if(c===' '){await slp(lG)}else if(c==='/'){await slp(wG)}else if(c==='\n'){await slp(wG*2)}
+await slp(sG);}
+stopPlay();
+}
+function stopPlay(){playing=false;lOff();if(tmr){clearTimeout(tmr);tmr=null}}
+
+// CONVERSION
+function toM(t){return t.toUpperCase().split('').map(c=>MP[c]||'').filter(c=>c).join(' ')}
+function frM(m){const w=m.trim().split(' / ');return w.map(x=>x.split(' ').map(s=>RM[s]||'').join('')).join(' ')}
+let dir='encode';
+function upT(){const v=$('txtIn').value;let r=dir==='encode'?toM(v):frM(v);if(!r.trim()){$('outBox').textContent='Morse code appears here...';$('outBox').classList.add('em')}else{$('outBox').textContent=r;$('outBox').classList.remove('em')}}
+$('txtIn').addEventListener('input',upT);
+
+// TRANSLATOR BUTTONS
+$('btnPlay').addEventListener('click',()=>{const m=$('outBox').textContent;if($('outBox').classList.contains('em'))return;if(playing)stopPlay();playMS(m)});
+$('btnStop').addEventListener('click',stopPlay);
+$('btnFlash').addEventListener('click',()=>{const m=$('outBox').textContent;if($('outBox').classList.contains('em'))return;playMS(m,true)});
+$('btnCopy').addEventListener('click',async()=>{const m=$('outBox').textContent;if(!$('outBox').classList.contains('em'))await navigator.clipboard.writeText(m)});
+$('btnSwap').addEventListener('click',()=>{dir=dir==='encode'?'decode':'encode';$('txtIn').value=$('outBox').textContent;upT()});
+$('btnWav').addEventListener('click',()=>{const m=$('outBox').textContent;if($('outBox').classList.contains('em'))return;const sr=8000,dS=Math.floor(sr*(1.2/wpm)),dashS=dS*3,gS=dS;let tot=0;for(const c of m){if(c==='.')tot+=dS+gS;else if(c==='-')tot+=dashS+gS;else if(c===' ')tot+=gS*2;else if(c==='/')tot+=gS*4}const buf=new ArrayBuffer(44+tot*2),v=new DataView(buf);const ws=(v,o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};ws(v,0,'RIFF');v.setUint32(4,36+tot*2,true);ws(v,8,'WAVE');ws(v,12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);ws(v,36,'data');v.setUint32(40,tot*2,true);let off=44;for(let i=0;i<m.length;i++){const c=m[i];let samp=0;if(c==='.')samp=dS;else if(c==='-')samp=dashS;else{let sil=gS;if(c===' ')sil=gS*2;else if(c==='/')sil=gS*4;for(let s=0;s<sil;s++){v.setInt16(off,0,true);off+=2}continue}for(let s=0;s<samp;s++){const val=Math.sin(2*Math.PI*freq*s/sr)*.5*32767;v.setInt16(off,Math.floor(val),true);off+=2}if(i<m.length-1){const n=m[i+1];if(n!==' '&&n!=='/'&&n!=='\n'){for(let s=0;s<gS;s++){v.setInt16(off,0,true);off+=2}}}}const blob=new Blob([buf],{type:'audio/wav'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='morse.wav';a.click();URL.revokeObjectURL(url)});
+
+// MODE SWITCH
+function swM(m){mode=m;if(m==='trans'){$('secT').classList.add('act');$('secC').classList.remove('act');$('btnt').classList.add('act');$('btnc').classList.remove('act')}else{$('secC').classList.add('act');$('secT').classList.remove('act');$('btnc').classList.add('act');$('btnt').classList.remove('act')}}
+$('btnt').addEventListener('click',()=>swM('trans'));$('btnc').addEventListener('click',()=>swM('chat'));
+$('spdS').addEventListener('input',()=>{wpm=parseInt($('spdS').value);$('spdL').textContent=wpm});
+$('freqS').addEventListener('input',()=>{freq=parseInt($('freqS').value);$('freqL').textContent=freq});
+
+// SHORTCUTS
+document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='m'){e.preventDefault();togMute()}if(e.ctrlKey&&e.key==='k'){e.preventDefault();togKb()}});
+
+// WEBSOCKET
+function connectWS(){
+if(ws)try{ws.close()}catch(e){}
+ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host);
+ws.onopen=()=>{connected=true;$('sdot').classList.add('cn');$('stxt').classList.add('cn');$('stxt').textContent='Connected';aSy('📡 Connected');if(myName)ws.send(JSON.stringify({type:'setName',name:myName}))};
+ws.onmessage=e=>{
+try{const d=JSON.parse(e.data);
+if(d.type==='welcome'){myId=d.clientId;if(!myName){myName=d.clientName;$('nameDisplay').textContent='You: '+myName}}
+if(d.type==='system')aSy(d.text);
+if(d.type==='msg'){aMsg('received',d.text,d.fromName||d.from);playMS(toM(d.text||''))}
+if(d.type==='pm')aMsg('pm',d.text,d.fromName||'ADMIN');
+if(d.type==='nameUpdated'){myName=d.name;$('nameDisplay').textContent='You: '+myName}
+}catch(err){}
+};
+ws.onclose=()=>{connected=false;$('sdot').classList.remove('cn');$('stxt').classList.remove('cn');$('stxt').textContent='Reconnecting...';setTimeout(connectWS,2000)};
+}
+connectWS();
+
+function sendWS(msg){if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(msg))}
+
+// CHAT FUNCTIONS
+function aMsg(type,text,from){
+const d=document.createElement('div');d.className='msg '+(type==='sent'?'ms':type==='received'?'mr':type==='pm'?'mp':'my');
+const label=type==='sent'?'YOU':type==='pm'?'🔒 PM FROM '+(from||'ADMIN'):(from||'Unknown');
+d.innerHTML=`<div class="ml">${label}</div><div class="mtx">${text}</div>`;
+$('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight;
+}
+function aSy(text){const d=document.createElement('div');d.className='msg my';d.textContent=text;$('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight;}
+
+function sendChat(){
+const text=$('chatIn').value.trim();if(!text||!connected)return;
+sendWS({type:'msg',text:text});
+aMsg('sent',text);
+$('chatIn').value='';
+$('chatIn').focus();
+}
+
+$('btnChatSend').addEventListener('click',sendChat);
+$('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat()}});
+$('btnChatClear').addEventListener('click',()=>{$('chatLog').innerHTML=''});
+$('btnTest').addEventListener('click',()=>{if(!connected)return;sendWS({type:'test'});aMsg('sent','TEST SIGNAL');playMS('... --- ...')});
+
+// SET NAME
+$('btnSetName').addEventListener('click',()=>{const n=$('nameInput').value.trim();if(!n)return;myName=n;$('nameDisplay').textContent='You: '+n;$('nameInput').value='';sendWS({type:'setName',name:n})});
+$('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnSetName').click()});
+
+upT();
+</script>
+</body>
+</html>
