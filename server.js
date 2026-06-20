@@ -4,7 +4,7 @@ const path = require('path');
 const WebSocket = require('ws');
 const os = require('os');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = 'morse123';
 const clients = new Map();
 let clientCount = 0;
