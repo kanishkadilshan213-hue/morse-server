@@ -6,23 +6,37 @@ const os = require('os');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = 'morse123';
-const clients = new Map();
+
+// In-memory storage (resets on server restart — good enough for now)
+const users = new Map(); // username -> { password, callsign, country, createdAt }
+const clients = new Map(); // ws -> clientData
 let clientCount = 0;
 let bannedIPs = new Set();
 let mutedClients = new Set();
 let messageLog = [];
 
+// Country codes for callsign generation
+const countryCodes = {
+    'US':'United States','GB':'United Kingdom','DE':'Germany','BR':'Brazil','JP':'Japan',
+    'FR':'France','IT':'Italy','CA':'Canada','AU':'Australia','IN':'India',
+    'RU':'Russia','CN':'China','KR':'South Korea','ES':'Spain','MX':'Mexico',
+    'NL':'Netherlands','SE':'Sweden','NO':'Norway','DK':'Denmark','FI':'Finland',
+    'PL':'Poland','UA':'Ukraine','TR':'Turkey','GR':'Greece','PT':'Portugal',
+    'AR':'Argentina','CL':'Chile','CO':'Colombia','PE':'Peru','ZA':'South Africa',
+    'EG':'Egypt','NG':'Nigeria','KE':'Kenya','MA':'Morocco','AE':'UAE',
+    'SA':'Saudi Arabia','IL':'Israel','TH':'Thailand','VN':'Vietnam','PH':'Philippines',
+    'MY':'Malaysia','ID':'Indonesia','NZ':'New Zealand','SG':'Singapore','PK':'Pakistan'
+};
+
 const server = http.createServer((req, res) => {
     if (req.url === '/' || req.url === '/index.html') {
-        const filePath = path.join(__dirname, 'index.html');
-        fs.readFile(filePath, (err, data) => {
+        fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
             if (err) { res.writeHead(404); res.end('index.html not found'); return; }
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(data);
         });
     } else if (req.url === '/admin') {
-        const filePath = path.join(__dirname, 'admin.html');
-        fs.readFile(filePath, (err, data) => {
+        fs.readFile(path.join(__dirname, 'admin.html'), (err, data) => {
             if (err) { res.writeHead(404); res.end('admin.html not found'); return; }
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(data);
@@ -32,22 +46,39 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
+// Channel definitions
+const channels = {
+    'CH1': { type: 'standard', minWPM: 5, maxWPM: 20 },
+    'CH2': { type: 'standard', minWPM: 5, maxWPM: 20 },
+    'CH3': { type: 'standard', minWPM: 5, maxWPM: 20 },
+    'CH4': { type: 'standard', minWPM: 5, maxWPM: 20 },
+    'CH5': { type: 'training', minWPM: 5, maxWPM: 10, showLetters: true },
+    'CH6': { type: 'training', minWPM: 5, maxWPM: 10, showLetters: true },
+    'CH7': { type: 'pro', minWPM: 20, maxWPM: 40, requireAuth: true, showLetters: false },
+    'CH8': { type: 'pro', minWPM: 20, maxWPM: 40, requireAuth: true, showLetters: false }
+};
+
 function getClientsList() {
     const list = [];
     clients.forEach((data, ws) => {
         if (ws.readyState === WebSocket.OPEN) {
             list.push({
                 id: data.id,
-                name: data.name,
-                displayName: data.displayName,
+                username: data.username,
+                callsign: data.callsign,
                 channel: data.channel,
-                ip: data.isAdmin ? 'localhost' : data.ip,
                 isAdmin: data.isAdmin,
-                muted: mutedClients.has(data.id)
+                muted: mutedClients.has(data.id),
+                authenticated: data.authenticated,
+                country: data.country
             });
         }
     });
     return list;
+}
+
+function getChannelUsers(ch) {
+    return getClientsList().filter(c => c.channel === ch);
 }
 
 function broadcastToAll(msg) {
@@ -67,10 +98,9 @@ function broadcastToChannel(channel, msg) {
 function broadcastExcept(sender, msg) {
     const str = JSON.stringify(msg);
     const senderData = clients.get(sender);
-    const channel = senderData ? senderData.channel : null;
-    if (!channel) return;
+    if (!senderData) return;
     clients.forEach((data, ws) => {
-        if (ws !== sender && data.channel === channel && ws.readyState === WebSocket.OPEN) {
+        if (ws !== sender && data.channel === senderData.channel && ws.readyState === WebSocket.OPEN) {
             try { ws.send(str); } catch (e) {}
         }
     });
@@ -117,35 +147,41 @@ wss.on('connection', (ws, req) => {
     const isLocalhost = (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1');
     
     if (bannedIPs.has(ip) && !isLocalhost) {
-        ws.send(JSON.stringify({ type: 'banned', text: 'Banned.' }));
+        ws.send(JSON.stringify({ type: 'connection', state: 'banned', text: 'You are banned.' }));
         setTimeout(() => { try { ws.close(); } catch (e) {} }, 1000);
         return;
     }
     
     const clientId = ++clientCount;
-    const defaultName = isLocalhost ? 'ADMIN' : ('Operator_' + clientId);
+    const defaultName = isLocalhost ? 'ADMIN' : ('OP' + clientId);
     
     clients.set(ws, {
         id: clientId,
-        name: defaultName,
-        displayName: defaultName,
+        username: defaultName,
+        callsign: '',
         channel: 'CH1',
         ip: ip,
         isAdmin: isLocalhost,
+        authenticated: isLocalhost,
+        country: '',
         connectedAt: new Date().toISOString(),
         messageCount: 0
     });
     
     console.log(`📡 ${defaultName} (${clientId}) on CH1. ${clients.size} online.`);
     
+    // Send connection state
     ws.send(JSON.stringify({
-        type: 'welcome',
-        text: `Connected! Channel: CH1`,
+        type: 'connection',
+        state: 'connected',
         clientId: clientId,
-        clientName: defaultName,
+        username: defaultName,
         channel: 'CH1',
         isAdmin: isLocalhost,
-        clients: getClientsList()
+        authenticated: isLocalhost,
+        clients: getClientsList(),
+        channelUsers: getChannelUsers('CH1'),
+        channels: channels
     }));
     
     broadcastToChannel('CH1', {
@@ -155,6 +191,7 @@ wss.on('connection', (ws, req) => {
     });
     
     broadcastToAll({ type: 'clientList', clients: getClientsList() });
+    broadcastToChannel('CH1', { type: 'channelUsers', users: getChannelUsers('CH1') });
     
     ws.on('message', (data) => {
         try {
@@ -163,47 +200,94 @@ wss.on('connection', (ws, req) => {
             if (!clientData) return;
             
             msg.from = clientId;
-            msg.fromName = clientData.displayName || clientData.name;
+            msg.fromUsername = clientData.username;
+            msg.fromCallsign = clientData.callsign;
             msg.channel = clientData.channel;
             msg.timestamp = Date.now();
             
-            if (msg.type === 'setName') {
-                if (msg.name && msg.name.trim().length > 0 && msg.name.trim().length <= 20) {
-                    const old = clientData.displayName;
-                    clientData.name = msg.name.trim();
-                    clientData.displayName = msg.name.trim();
-                    broadcastToChannel(clientData.channel, { type: 'system', text: `${old} → ${clientData.displayName}`, channel: clientData.channel });
-                    ws.send(JSON.stringify({ type: 'nameUpdated', name: clientData.displayName }));
-                    broadcastToAll({ type: 'clientList', clients: getClientsList() });
+            // REGISTER
+            if (msg.type === 'register') {
+                const { username, password, country, callsignSuffix } = msg;
+                if (!username || !password || !country || !callsignSuffix) {
+                    ws.send(JSON.stringify({ type: 'registerResult', success: false, text: 'All fields required.' }));
+                    return;
                 }
+                if (users.has(username.toLowerCase())) {
+                    ws.send(JSON.stringify({ type: 'registerResult', success: false, text: 'Username taken.' }));
+                    return;
+                }
+                if (callsignSuffix.length !== 5) {
+                    ws.send(JSON.stringify({ type: 'registerResult', success: false, text: 'Callsign suffix must be 5 characters.' }));
+                    return;
+                }
+                const callsign = country.toUpperCase() + '-' + callsignSuffix.toUpperCase();
+                users.set(username.toLowerCase(), { password, callsign, country: country.toUpperCase(), createdAt: new Date().toISOString() });
+                clientData.username = username;
+                clientData.callsign = callsign;
+                clientData.authenticated = true;
+                clientData.country = country;
+                ws.send(JSON.stringify({ type: 'registerResult', success: true, callsign, username }));
+                broadcastToAll({ type: 'clientList', clients: getClientsList() });
+                broadcastToChannel(clientData.channel, { type: 'channelUsers', users: getChannelUsers(clientData.channel) });
+                broadcastToChannel(clientData.channel, { type: 'system', text: `${username} (${callsign}) registered!`, channel: clientData.channel });
                 return;
             }
             
+            // LOGIN
+            if (msg.type === 'login') {
+                const { username, password } = msg;
+                const user = users.get(username.toLowerCase());
+                if (!user || user.password !== password) {
+                    ws.send(JSON.stringify({ type: 'loginResult', success: false, text: 'Invalid credentials.' }));
+                    return;
+                }
+                clientData.username = username;
+                clientData.callsign = user.callsign;
+                clientData.authenticated = true;
+                clientData.country = user.country;
+                ws.send(JSON.stringify({ type: 'loginResult', success: true, callsign: user.callsign, username }));
+                broadcastToAll({ type: 'clientList', clients: getClientsList() });
+                broadcastToChannel(clientData.channel, { type: 'channelUsers', users: getChannelUsers(clientData.channel) });
+                broadcastToChannel(clientData.channel, { type: 'system', text: `${username} (${user.callsign}) logged in.`, channel: clientData.channel });
+                return;
+            }
+            
+            // JOIN CHANNEL
             if (msg.type === 'joinChannel') {
                 const newCh = msg.channel;
-                if (['CH1','CH2','CH3','CH4'].includes(newCh) && newCh !== clientData.channel) {
-                    const oldCh = clientData.channel;
-                    clientData.channel = newCh;
-                    broadcastToChannel(oldCh, { type: 'system', text: `${clientData.displayName} left ${oldCh}`, channel: oldCh });
-                    broadcastToChannel(newCh, { type: 'system', text: `${clientData.displayName} joined ${newCh}`, channel: newCh });
-                    ws.send(JSON.stringify({ type: 'channelChanged', channel: newCh }));
-                    broadcastToAll({ type: 'clientList', clients: getClientsList() });
+                if (!channels[newCh]) return;
+                if (newCh === clientData.channel) return;
+                
+                // Pro channel gate
+                if (channels[newCh].requireAuth && !clientData.authenticated) {
+                    ws.send(JSON.stringify({ type: 'connection', state: 'denied', text: 'Login required for Pro channels.', channel: newCh }));
+                    return;
                 }
+                
+                const oldCh = clientData.channel;
+                clientData.channel = newCh;
+                broadcastToChannel(oldCh, { type: 'system', text: `${clientData.username} left.`, channel: oldCh });
+                broadcastToChannel(oldCh, { type: 'channelUsers', users: getChannelUsers(oldCh) });
+                broadcastToChannel(newCh, { type: 'system', text: `${clientData.username} joined.`, channel: newCh });
+                broadcastToChannel(newCh, { type: 'channelUsers', users: getChannelUsers(newCh) });
+                ws.send(JSON.stringify({ type: 'channelChanged', channel: newCh, channelUsers: getChannelUsers(newCh) }));
+                broadcastToAll({ type: 'clientList', clients: getClientsList() });
                 return;
             }
             
-            if (mutedClients.has(clientId) && (msg.type === 'msg' || msg.type === 'test')) {
+            // Check muted
+            if (mutedClients.has(clientId) && (msg.type === 'msg' || msg.type === 'morseMsg')) {
                 ws.send(JSON.stringify({ type: 'system', text: 'You are muted.', channel: clientData.channel }));
                 return;
             }
             
             // ADMIN COMMANDS
             if (msg.type === 'admin-login' && msg.password === ADMIN_PASSWORD) {
-                ws.send(JSON.stringify({ type: 'admin-auth', success: true, clients: getClientsList(), log: messageLog.slice(-50), bannedIPs: Array.from(bannedIPs) }));
+                ws.send(JSON.stringify({ type: 'admin-auth', success: true, clients: getClientsList(), log: messageLog.slice(-50), bannedIPs: Array.from(bannedIPs), channels }));
                 return;
             }
-            if (msg.type === 'admin-kick' && msg.adminPassword === ADMIN_PASSWORD) { kickClient(msg.targetId); broadcastToAll({ type: 'system', text: `Client ${msg.targetId} kicked.` }); return; }
-            if (msg.type === 'admin-ban' && msg.adminPassword === ADMIN_PASSWORD) { banClient(msg.targetId); broadcastToAll({ type: 'system', text: `Client ${msg.targetId} banned.` }); return; }
+            if (msg.type === 'admin-kick' && msg.adminPassword === ADMIN_PASSWORD) { kickClient(msg.targetId); broadcastToAll({ type: 'system', text: `User kicked.` }); return; }
+            if (msg.type === 'admin-ban' && msg.adminPassword === ADMIN_PASSWORD) { banClient(msg.targetId); broadcastToAll({ type: 'system', text: `User banned.` }); return; }
             if (msg.type === 'admin-mute' && msg.adminPassword === ADMIN_PASSWORD) {
                 if (mutedClients.has(msg.targetId)) { mutedClients.delete(msg.targetId); sendToClient(msg.targetId, { type: 'system', text: 'Unmuted.' }); }
                 else { mutedClients.add(msg.targetId); sendToClient(msg.targetId, { type: 'system', text: 'Muted.' }); }
@@ -212,14 +296,13 @@ wss.on('connection', (ws, req) => {
             }
             if (msg.type === 'admin-broadcast' && msg.adminPassword === ADMIN_PASSWORD) { broadcastToAll({ type: 'system', text: `📢 ADMIN: ${msg.text}` }); return; }
             if (msg.type === 'admin-pm' && msg.adminPassword === ADMIN_PASSWORD) { sendToClient(msg.targetId, { type: 'pm', text: msg.text, from: 'ADMIN' }); return; }
-            if (msg.type === 'admin-unban' && msg.adminPassword === ADMIN_PASSWORD) { bannedIPs.delete(msg.ip); broadcastToAll({ type: 'system', text: `IP ${msg.ip} unbanned.` }); return; }
             
             // Regular message
             clientData.messageCount++;
-            messageLog.push({ from: clientId, fromName: clientData.displayName, channel: clientData.channel, type: msg.type, text: msg.text || '', time: new Date().toISOString() });
+            messageLog.push({ from: clientId, username: clientData.username, callsign: clientData.callsign, channel: clientData.channel, type: msg.type, text: msg.text || '', morse: msg.morse || '', time: new Date().toISOString() });
             if (messageLog.length > 200) messageLog.shift();
             
-            console.log(`📨 [${clientData.channel}] ${clientData.displayName}: ${msg.text || msg.type}`);
+            console.log(`📨 [${clientData.channel}] ${clientData.username}: ${msg.text || msg.morse || msg.type}`);
             broadcastExcept(ws, msg);
             
         } catch (e) { console.log('Error:', e.message); }
@@ -227,11 +310,12 @@ wss.on('connection', (ws, req) => {
     
     ws.on('close', () => {
         const clientData = clients.get(ws);
-        const name = clientData?.displayName || 'Unknown';
+        const name = clientData?.username || 'Unknown';
         const ch = clientData?.channel || 'CH1';
         clients.delete(ws);
         mutedClients.delete(clientId);
-        broadcastToChannel(ch, { type: 'system', text: `${name} left ${ch}.`, channel: ch });
+        broadcastToChannel(ch, { type: 'system', text: `${name} left.`, channel: ch });
+        broadcastToChannel(ch, { type: 'channelUsers', users: getChannelUsers(ch) });
         broadcastToAll({ type: 'clientList', clients: getClientsList() });
     });
     
@@ -239,5 +323,22 @@ wss.on('connection', (ws, req) => {
 });
 
 server.listen(PORT, () => {
-    console.log('📻 Morse Server with Channels on port', PORT);
+    console.log('');
+    console.log('═══════════════════════════════════');
+    console.log('  📻 MORSE CENTER v3');
+    console.log('═══════════════════════════════════');
+    console.log(`  Local: http://localhost:${PORT}`);
+    console.log(`  Admin: http://localhost:${PORT}/admin`);
+    const ifaces = os.networkInterfaces();
+    for (const name of Object.keys(ifaces)) {
+        for (const iface of ifaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                console.log(`  Network: http://${iface.address}:${PORT}`);
+            }
+        }
+    }
+    console.log(`  Admin Password: ${ADMIN_PASSWORD}`);
+    console.log('  8 Channels | Login/Register | Pro Gate');
+    console.log('  Press Ctrl+C to stop');
+    console.log('═══════════════════════════════════');
 });
