@@ -8,36 +8,36 @@
 :root{--bg:#0a0a0a;--pn:#1a1a1a;--bd:#2a2a2a;--tx:#c8c8c8;--ac:#f0c040;--sc:#4caf50;--er:#f44336;--wa:#ff9800;--in:#2196F3;--pm:#ff69b4}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Courier New',monospace;background:var(--bg);color:var(--tx);padding:15px;min-height:100vh}
-.c{max-width:950px;margin:0 auto}
-h1{color:var(--ac);text-align:center;letter-spacing:4px;font-size:1.2rem;margin-bottom:10px}
+.c{max-width:1000px;margin:0 auto}
+h1{color:var(--ac);text-align:center;letter-spacing:4px;font-size:1.2rem;margin-bottom:6px}
 .sb{text-align:center;font-size:.55rem;color:#666;margin-bottom:10px}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
-.dot.on{background:#4caf50;box-shadow:0 0 6px #4caf50}
-.dot.off{background:#f44336}
+.dot.on{background:#4caf50;box-shadow:0 0 6px #4caf50}.dot.off{background:#f44336}
 .login-box{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:25px;text-align:center;max-width:380px;margin:40px auto}
 .login-box input{width:100%;padding:8px;margin:8px 0;background:#0f0f0f;border:1px solid var(--bd);color:var(--ac);font-family:inherit;font-size:.85rem;border-radius:5px;text-align:center;letter-spacing:3px}
 .login-box button{padding:8px 25px;background:var(--sc);color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:bold;letter-spacing:2px;font-size:.75rem}
 .panel{display:none}.panel.vis{display:block}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
 .card{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:12px}
 .card h3{color:var(--ac);letter-spacing:2px;font-size:.7rem;margin-bottom:8px}
-.chat-box{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:5px;height:300px;overflow-y:auto;padding:8px;font-size:.6rem;line-height:1.4;margin-bottom:8px}
+.chat-box{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:5px;height:250px;overflow-y:auto;padding:8px;font-size:.6rem;line-height:1.4;margin-bottom:8px}
 .chat-box::-webkit-scrollbar{width:3px}.chat-box::-webkit-scrollbar-track{background:#0a0a0a}.chat-box::-webkit-scrollbar-thumb{background:#2a2a2a}
 .msg{margin-bottom:3px;padding:3px 6px;border-radius:4px}
-.ms{background:#0a1a0a;border-left:2px solid var(--sc)}.mr{background:#1a0a00;border-left:2px solid var(--wa)}.mp{background:#1a0020;border-left:2px solid var(--pm)}.ma{background:#0a0a1a;border-left:2px solid var(--in)}.my{background:0;border:none;text-align:center;color:#444;font-style:italic;font-size:.5rem}
-.ml{font-size:.45rem;letter-spacing:2px;opacity:.7}.ms .ml{color:var(--sc)}.mr .ml{color:var(--wa)}.mp .ml{color:var(--pm)}.ma .ml{color:var(--in)}
-.mtx{color:#ddd}
-.client-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1a1a1a;font-size:.58rem;gap:4px}
+.ms{background:#0a1a0a;border-left:2px solid var(--sc)}.mr{background:#1a0a00;border-left:2px solid var(--wa)}.mp{background:#1a0020;border-left:2px solid var(--pm)}.my{background:0;border:none;text-align:center;color:#444;font-style:italic;font-size:.5rem}
+.ml{font-size:.45rem;letter-spacing:1px;opacity:.7}.ms .ml{color:var(--sc)}.mr .ml{color:var(--wa)}.mp .ml{color:var(--pm)}
+.mtx{color:#ddd;font-size:.55rem}
+.client-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1a1a1a;font-size:.55rem;gap:4px;flex-wrap:wrap}
 .client-row .name{color:var(--ac);font-weight:bold}
-.client-row .ch{color:var(--ac);font-size:.5rem;background:#1a1a1a;padding:1px 5px;border-radius:3px}
-.client-row .muted-tag{color:var(--wa);font-size:.5rem}
-.client-row .admin-tag{color:var(--in);font-size:.5rem}
+.client-row .ch{color:var(--ac);font-size:.48rem;background:#1a1a1a;padding:1px 4px;border-radius:3px}
+.client-row .cs{color:#888;font-size:.45rem}
+.client-row .muted-tag{color:var(--wa);font-size:.48rem}
+.client-row .admin-tag{color:var(--in);font-size:.48rem}
 .btns{display:flex;gap:3px}
-.btns button{padding:2px 6px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-size:.5rem;font-weight:bold}
+.btns button{padding:2px 6px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-size:.48rem;font-weight:bold}
 .btn-pm{background:var(--in);color:#fff}.btn-mute{background:#607d8b;color:#fff}.btn-kick{background:var(--wa);color:#000}.btn-ban{background:var(--er);color:#fff}.btn-unmute{background:var(--sc);color:#fff}
-.input-row{display:flex;gap:6px;margin-bottom:6px}
-.input-row input{flex:1;padding:6px 8px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.65rem}
-.input-row select{padding:6px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.65rem;max-width:150px}
+.input-row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.input-row input{flex:1;min-width:150px;padding:6px 8px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.65rem}
+.input-row select{padding:6px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.65rem;max-width:160px}
 .input-row button{padding:6px 10px;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:bold;font-size:.6rem;white-space:nowrap}
 .btn-send{background:var(--sc);color:#fff}.btn-bc{background:var(--ac);color:#000}.btn-pms{background:var(--in);color:#fff}
 select option{background:#1a1a1a;color:var(--tx)}
@@ -46,6 +46,10 @@ select option{background:#1a1a1a;color:var(--tx)}
 .quick-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
 .quick-actions button{padding:3px 8px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-size:.5rem;font-weight:bold}
 .btn-mute-all{background:#607d8b;color:#fff}.btn-unmute-all{background:var(--sc);color:#fff}.btn-kick-all{background:var(--er);color:#fff}
+.chan-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.chan-stat{background:#0f0f0f;padding:4px 8px;border-radius:4px;font-size:.5rem;text-align:center}
+.chan-stat .cn{color:var(--ac);font-weight:bold}
+.chan-stat .cc{color:#888;font-size:.45rem}
 </style>
 </head>
 <body>
@@ -61,13 +65,14 @@ select option{background:#1a1a1a;color:var(--tx)}
 </div>
 
 <div class="panel" id="panel">
+<div class="chan-stats" id="chanStats"></div>
+
 <div class="grid">
 <div class="card">
-<h3>📊 STATS</h3>
-<div class="stat-num" id="clientCount">0</div>
-<div class="stat-label">online</div>
-<div class="stat-num" id="mutedCount" style="color:var(--wa);font-size:1rem;margin-top:6px">0</div>
-<div class="stat-label">muted</div>
+<h3>📊 OVERVIEW</h3>
+<div class="stat-num" id="clientCount">0</div><div class="stat-label">total online</div>
+<div class="stat-num" id="mutedCount" style="color:var(--wa);font-size:1rem;margin-top:6px">0</div><div class="stat-label">muted</div>
+<div class="stat-num" id="authCount" style="color:var(--in);font-size:1rem;margin-top:6px">0</div><div class="stat-label">authenticated</div>
 <div class="quick-actions">
 <button class="btn-mute-all" onclick="muteAll()">🔇 Mute All</button>
 <button class="btn-unmute-all" onclick="unmuteAll()">🔊 Unmute</button>
@@ -75,34 +80,29 @@ select option{background:#1a1a1a;color:var(--tx)}
 </div>
 </div>
 <div class="card">
-<h3>👥 CLIENTS</h3>
-<div id="clientList" style="max-height:200px;overflow-y:auto;color:#666;font-size:.55rem">Loading...</div>
+<h3>👥 ALL CLIENTS</h3>
+<div id="clientList" style="max-height:220px;overflow-y:auto;color:#666;font-size:.5rem">Loading...</div>
+</div>
+<div class="card">
+<h3>💬 QUICK ACTIONS</h3>
+<div class="input-row"><select id="pmTarget"><option value="all">📢 All Channels</option></select></div>
+<div class="input-row"><input type="text" id="chatMsg" placeholder="Message or PM..."><button class="btn-send" onclick="sendMsg()">📤</button></div>
+<div class="input-row"><button class="btn-bc" onclick="broadcast()">📢 Broadcast All</button><button class="btn-pms" onclick="sendPM()">💬 Send PM</button></div>
 </div>
 </div>
 
-<div class="card" style="margin-bottom:10px">
-<h3>💬 LIVE MONITOR</h3>
-<div class="chat-box" id="chatBox"><div class="my">Waiting for messages...</div></div>
-<div class="input-row">
-<select id="pmTarget"><option value="all">📢 All Channels</option></select>
-<input type="text" id="chatMsg" placeholder="Type message or PM..." maxlength="300">
-<button class="btn-send" onclick="sendMsg()">📤 SEND</button>
-</div>
-<div style="display:flex;gap:4px;margin-top:4px">
-<button class="btn-bc" onclick="broadcast()">📢 Broadcast All</button>
-<button class="btn-pms" onclick="sendPM()">💬 Send PM</button>
-</div>
+<div class="card" style="margin-top:10px">
+<h3>📝 LIVE MONITOR (All Channels)</h3>
+<div class="chat-box" id="chatBox"><div class="my">Waiting for activity...</div></div>
 </div>
 </div>
 </div>
 
 <script>
-let ws=null,adminAuth=false,adminPass='',clientsData=[],myId=0;
+let ws=null,adminAuth=false,adminPass='',clientsData=[],channelsData={};
 
-function updateStatus(on){
-document.getElementById('statusDot').className='dot '+(on?'on':'off');
-document.getElementById('statusTxt').textContent=on?'Connected':'Reconnecting...';
-}
+function updateStatus(on){$('statusDot').className='dot '+(on?'on':'off');$('statusTxt').textContent=on?'Connected':'Reconnecting...'}
+function $(id){return document.getElementById(id)}
 
 function connect(){
 if(ws)try{ws.close()}catch(e){}
@@ -110,53 +110,59 @@ ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host);
 ws.onopen=()=>{updateStatus(true);if(adminAuth&&adminPass)ws.send(JSON.stringify({type:'admin-login',password:adminPass}))};
 ws.onmessage=e=>{
 try{const d=JSON.parse(e.data);
-if(d.type==='welcome'){myId=d.clientId}
+if(d.type==='welcome'){}
 if(d.type==='admin-auth'){
-if(d.success){adminAuth=true;document.getElementById('loginBox').style.display='none';document.getElementById('panel').classList.add('vis');updateClients(d.clients)}
-else{document.getElementById('loginErr').textContent='Wrong password!'}
+if(d.success){adminAuth=true;$('loginBox').style.display='none';$('panel').classList.add('vis');updateClients(d.clients);if(d.channels)channelsData=d.channels;updateChanStats()}
+else{$('loginErr').textContent='Wrong password!'}
 }
 if(d.type==='clientList')updateClients(d.clients);
 if(d.type==='system')addChat('system',d.text);
-if(d.type==='msg')addChat('msg',d.text,d.fromName||d.from,d.channel);
-if(d.type==='pm')addChat('pm',d.text,d.fromName||'ADMIN');
+if(d.type==='msg')addChat('msg',(d.fromUsername||d.from)+': '+d.text,'['+d.channel+']');
+if(d.type==='morseMsg')addChat('msg','🔘 '+(d.fromUsername||d.from)+': '+d.morse,'['+d.channel+']');
+if(d.type==='pm')addChat('pm',d.text,d.from||'ADMIN');
 }catch(err){}
 };
 ws.onclose=()=>{updateStatus(false);setTimeout(connect,2000)};
 ws.onerror=()=>{ws.close()};
 }
 
-function login(){
-adminPass=document.getElementById('adminPass').value;
-ws.send(JSON.stringify({type:'admin-login',password:adminPass}));
-}
+function login(){adminPass=$('adminPass').value;ws.send(JSON.stringify({type:'admin-login',password:adminPass}))}
 
 function updateClients(list){
 clientsData=list;
-document.getElementById('clientCount').textContent=list.length;
-document.getElementById('mutedCount').textContent=list.filter(c=>c.muted).length;
+$('clientCount').textContent=list.length;
+$('mutedCount').textContent=list.filter(c=>c.muted).length;
+$('authCount').textContent=list.filter(c=>c.authenticated).length;
 let html='';
 list.forEach(c=>{
 html+=`<div class="client-row">
-<span>🟢 <span class="name">${c.displayName||c.name}</span> <span class="ch">${c.channel||'CH1'}</span> ${c.isAdmin?'<span class="admin-tag">[A]</span>':''} ${c.muted?'<span class="muted-tag">[MUTED]</span>':''}</span>
+<span>🟢 <span class="name">${c.username||c.callsign||'Unknown'}</span> <span class="cs">${c.callsign||''}</span> <span class="ch">${c.channel||'CH1'}</span> ${c.isAdmin?'<span class="admin-tag">[A]</span>':''} ${c.muted?'<span class="muted-tag">[MUTED]</span>':''}</span>
 <div class="btns">
-<button class="btn-pm" onclick="quickPM(${c.id},'${c.displayName||c.name}')">💬</button>
+<button class="btn-pm" onclick="quickPM(${c.id},'${c.username||c.callsign}')">💬</button>
 <button class="${c.muted?'btn-unmute':'btn-mute'}" onclick="toggleMute(${c.id})">${c.muted?'🔊':'🔇'}</button>
 <button class="btn-kick" onclick="kick(${c.id})">Kick</button>
 <button class="btn-ban" onclick="ban(${c.id})">Ban</button>
 </div></div>`;
 });
-document.getElementById('clientList').innerHTML=html||'No clients';
-const sel=document.getElementById('pmTarget');
-sel.innerHTML='<option value="all">📢 All Channels</option>';
-list.forEach(c=>{if(!c.isAdmin)sel.innerHTML+=`<option value="${c.id}">💬 ${c.displayName||c.name} [${c.channel||'CH1'}]</option>`});
+$('clientList').innerHTML=html||'No clients';
+const sel=$('pmTarget');sel.innerHTML='<option value="all">📢 All Channels</option>';
+list.forEach(c=>{sel.innerHTML+=`<option value="${c.id}">💬 ${c.username||c.callsign||'Unknown'} [${c.channel||'CH1'}]</option>`});
+updateChanStats();
 }
 
-function addChat(type,text,from,ch){
-const box=document.getElementById('chatBox');
-const d=document.createElement('div');
+function updateChanStats(){
+const counts={};
+clientsData.forEach(c=>{counts[c.channel]=(counts[c.channel]||0)+1});
+let html='';
+for(let i=1;i<=8;i++){const ch='CH'+i;html+=`<div class="chan-stat"><div class="cn">${ch}</div><div class="cc">${counts[ch]||0} users</div></div>`}
+$('chanStats').innerHTML=html;
+}
+
+function addChat(type,text,ch){
+const box=$('chatBox');const d=document.createElement('div');
 let cls='my',label='';
-if(type==='msg'){cls='mr';label=(from||'Unknown')+' ['+(ch||'?')+']'}
-else if(type==='pm'){cls='mp';label='🔒 PM FROM '+from}
+if(type==='msg'){cls='mr';label=ch||''}
+else if(type==='pm'){cls='mp';label='🔒 PM'}
 else if(type==='system'){cls='my'}
 d.className='msg '+cls;
 d.innerHTML=(label?`<div class="ml">${label}</div>`:'')+`<div class="mtx">${text}</div>`;
@@ -164,15 +170,15 @@ box.appendChild(d);box.scrollTop=box.scrollHeight;
 }
 
 function sendMsg(){
-const msg=document.getElementById('chatMsg').value.trim();if(!msg)return;
-const target=document.getElementById('pmTarget').value;
+const msg=$('chatMsg').value.trim();if(!msg)return;
+const target=$('pmTarget').value;
 if(target==='all'){ws.send(JSON.stringify({type:'admin-broadcast',text:msg,adminPassword:adminPass}));addChat('system','📢 Broadcast: '+msg)}
-else{ws.send(JSON.stringify({type:'admin-pm',targetId:parseInt(target),text:msg,adminPassword:adminPass}));addChat('pm','📤 PM: '+msg,'YOU')}
-document.getElementById('chatMsg').value='';
+else{ws.send(JSON.stringify({type:'admin-pm',targetId:parseInt(target),text:msg,adminPassword:adminPass}));addChat('pm','📤 PM: '+msg)}
+$('chatMsg').value='';
 }
-function sendPM(){const msg=document.getElementById('chatMsg').value.trim();if(!msg)return;const target=document.getElementById('pmTarget').value;if(target==='all'){alert('Select a client for PM');return}ws.send(JSON.stringify({type:'admin-pm',targetId:parseInt(target),text:msg,adminPassword:adminPass}));addChat('pm','📤 PM: '+msg,'YOU');document.getElementById('chatMsg').value=''}
-function broadcast(){const msg=document.getElementById('chatMsg').value.trim()||'📢 Announcement';ws.send(JSON.stringify({type:'admin-broadcast',text:msg,adminPassword:adminPass}));addChat('system','📢 Broadcast: '+msg);document.getElementById('chatMsg').value=''}
-function quickPM(id,name){document.getElementById('pmTarget').value=id;document.getElementById('chatMsg').focus()}
+function sendPM(){const msg=$('chatMsg').value.trim();if(!msg)return;const target=$('pmTarget').value;if(target==='all'){alert('Select client');return}ws.send(JSON.stringify({type:'admin-pm',targetId:parseInt(target),text:msg,adminPassword:adminPass}));addChat('pm','📤 PM: '+msg);$('chatMsg').value=''}
+function broadcast(){const msg=$('chatMsg').value.trim()||'📢 Announcement';ws.send(JSON.stringify({type:'admin-broadcast',text:msg,adminPassword:adminPass}));addChat('system','📢 Broadcast: '+msg);$('chatMsg').value=''}
+function quickPM(id,name){$('pmTarget').value=id;$('chatMsg').focus()}
 function kick(id){ws.send(JSON.stringify({type:'admin-kick',targetId:id,adminPassword:adminPass}))}
 function ban(id){ws.send(JSON.stringify({type:'admin-ban',targetId:id,adminPassword:adminPass}))}
 function toggleMute(id){ws.send(JSON.stringify({type:'admin-mute',targetId:id,adminPassword:adminPass}))}
@@ -181,8 +187,8 @@ function unmuteAll(){clientsData.forEach(c=>{if(c.muted)ws.send(JSON.stringify({
 function kickAll(){clientsData.forEach(c=>{if(!c.isAdmin)ws.send(JSON.stringify({type:'admin-kick',targetId:c.id,adminPassword:adminPass}))})}
 
 document.addEventListener('keydown',e=>{
-if(e.key==='Enter'&&document.activeElement===document.getElementById('chatMsg')){e.preventDefault();sendMsg()}
-if(e.key==='Enter'&&document.activeElement===document.getElementById('adminPass')){e.preventDefault();login()}
+if(e.key==='Enter'&&document.activeElement===$('chatMsg')){e.preventDefault();sendMsg()}
+if(e.key==='Enter'&&document.activeElement===$('adminPass')){e.preventDefault();login()}
 });
 
 connect();
