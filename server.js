@@ -7,15 +7,13 @@ const os = require('os');
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = 'morse123';
 
-// In-memory storage (resets on server restart — good enough for now)
-const users = new Map(); // username -> { password, callsign, country, createdAt }
-const clients = new Map(); // ws -> clientData
+const users = new Map();
+const clients = new Map();
 let clientCount = 0;
 let bannedIPs = new Set();
 let mutedClients = new Set();
 let messageLog = [];
 
-// Country codes for callsign generation
 const countryCodes = {
     'US':'United States','GB':'United Kingdom','DE':'Germany','BR':'Brazil','JP':'Japan',
     'FR':'France','IT':'Italy','CA':'Canada','AU':'Australia','IN':'India',
@@ -46,7 +44,6 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
-// Channel definitions
 const channels = {
     'CH1': { type: 'standard', minWPM: 5, maxWPM: 20 },
     'CH2': { type: 'standard', minWPM: 5, maxWPM: 20 },
@@ -170,7 +167,6 @@ wss.on('connection', (ws, req) => {
     
     console.log(`📡 ${defaultName} (${clientId}) on CH1. ${clients.size} online.`);
     
-    // Send connection state
     ws.send(JSON.stringify({
         type: 'connection',
         state: 'connected',
@@ -255,17 +251,23 @@ wss.on('connection', (ws, req) => {
             // JOIN CHANNEL
             if (msg.type === 'joinChannel') {
                 const newCh = msg.channel;
-                if (!channels[newCh]) return;
+                if (!channels[newCh]) {
+                    ws.send(JSON.stringify({ type: 'system', text: 'Channel not found.', channel: clientData.channel }));
+                    return;
+                }
                 if (newCh === clientData.channel) return;
                 
                 // Pro channel gate
                 if (channels[newCh].requireAuth && !clientData.authenticated) {
-                    ws.send(JSON.stringify({ type: 'connection', state: 'denied', text: 'Login required for Pro channels.', channel: newCh }));
+                    ws.send(JSON.stringify({ type: 'connection', state: 'denied', text: 'Login required for Pro channels (CH7-CH8).', channel: newCh }));
                     return;
                 }
                 
                 const oldCh = clientData.channel;
                 clientData.channel = newCh;
+                
+                console.log(`🔄 ${clientData.username} switched from ${oldCh} to ${newCh}`);
+                
                 broadcastToChannel(oldCh, { type: 'system', text: `${clientData.username} left.`, channel: oldCh });
                 broadcastToChannel(oldCh, { type: 'channelUsers', users: getChannelUsers(oldCh) });
                 broadcastToChannel(newCh, { type: 'system', text: `${clientData.username} joined.`, channel: newCh });
