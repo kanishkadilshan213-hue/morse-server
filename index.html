@@ -58,9 +58,6 @@ body.flash{background:#fff}
 .morse-key-area{text-align:center;margin:8px 0}
 .morse-key{width:120px;height:120px;border-radius:50%;background:#1a1a1a;border:4px solid #333;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--ac);transition:.1s;user-select:none;-webkit-user-select:none}
 .morse-key:active,.morse-key.pressed{background:#f0c040;color:#000;border-color:#f0c040;box-shadow:0 0 40px rgba(240,192,64,.6);transform:scale(.95)}
-.morse-key.iambic{width:160px;border-radius:30px}
-.morse-key .left-pad,.morse-key .right-pad{width:70px;height:120px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem}
-.morse-key .left-pad:active,.morse-key .right-pad:active{color:#000}
 .cr{display:flex;gap:5px;margin-bottom:5px}
 .cr input{flex:1;padding:7px 10px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:5px;color:var(--ac);font-family:inherit;font-size:.7rem}
 .cr input:focus{outline:none;border-color:var(--ac)}
@@ -77,7 +74,6 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 .cp-row input[type=range]{flex:1;accent-color:var(--ac);max-width:150px}
 .cp-row span{color:var(--ac);min-width:35px;text-align:right}
 .cp-row select{padding:3px 6px;background:#1a1a1a;border:1px solid #2a2a2a;color:var(--ac);font-family:inherit;font-size:.55rem;border-radius:3px}
-/* Popups */
 .popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:100;justify-content:center;align-items:center}
 .popup.vi{display:flex}
 .popup-inner{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:20px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto}
@@ -85,19 +81,16 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 .popup-inner input{width:100%;padding:8px;margin:5px 0;background:#0f0f0f;border:1px solid #2a2a2a;color:var(--ac);font-family:inherit;font-size:.7rem;border-radius:4px}
 .popup-inner select{width:100%;padding:8px;margin:5px 0;background:#0f0f0f;border:1px solid #2a2a2a;color:var(--ac);font-family:inherit;font-size:.7rem;border-radius:4px}
 .popup-inner button{padding:8px 20px;margin:5px;background:var(--ac);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:bold;font-size:.65rem}
-.popup-close{position:absolute;top:10px;right:15px;color:#888;cursor:pointer;font-size:1.2rem}
-/* Morse chart */
 .morse-chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px;font-size:.55rem}
 .morse-chart div{padding:4px;background:#0a0a0a;border-radius:3px;text-align:center;cursor:pointer}
 .morse-chart div:hover{background:#1a1a1a}
 .morse-chart .letter{color:var(--ac);font-weight:bold}
 .morse-chart .code{color:var(--mo);font-size:.5rem}
-.footer{text-align:center;font-size:.45rem;color:#333;margin-top:6rem;padding-top:4px;border-top:1px solid #1a1a1a}
+.footer{text-align:center;font-size:.45rem;color:#333;margin-top:6px;padding-top:4px;border-top:1px solid #1a1a1a}
 </style>
 </head>
 <body>
 
-<!-- TUTORIAL POPUP -->
 <div class="popup" id="tutorialPopup">
 <div class="popup-inner">
 <h3>👋 Welcome to Morse Center!</h3>
@@ -117,16 +110,12 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 </div>
 </div>
 
-<!-- LOGIN POPUP -->
 <div class="popup" id="loginPopup"><div class="popup-inner"><h3>🔐 Login</h3><input type="text" id="loginUser" placeholder="Username"><input type="password" id="loginPass" placeholder="Password"><button onclick="doLogin()">Login</button><button onclick="showRegister()" style="background:#333;color:#fff">Register</button><button onclick="closePopups()" style="background:#444;color:#fff">Cancel</button><div id="loginErr" style="color:var(--er);font-size:.55rem;text-align:center"></div></div></div>
 
-<!-- REGISTER POPUP -->
 <div class="popup" id="registerPopup"><div class="popup-inner"><h3>📝 Register</h3><input type="text" id="regUser" placeholder="Username"><input type="password" id="regPass" placeholder="Password"><select id="regCountry"><option value="">Select Country</option></select><input type="text" id="regSuffix" placeholder="Callsign suffix (5 letters/numbers)" maxlength="5"><p style="font-size:.5rem;color:#888">Callsign: <span id="previewCallsign">XX-XXXXX</span></p><button onclick="doRegister()">Register</button><button onclick="showLogin()" style="background:#333;color:#fff">Back to Login</button><button onclick="closePopups()" style="background:#444;color:#fff">Cancel</button><div id="regErr" style="color:var(--er);font-size:.55rem;text-align:center"></div></div></div>
 
-<!-- PROFILE POPUP -->
 <div class="popup" id="profilePopup"><div class="popup-inner"><h3>🪪 Operator Profile</h3><div id="profileContent" style="font-size:.6rem;color:#ccc"></div><button onclick="closePopups()">Close</button></div></div>
 
-<!-- MORSE CHART POPUP -->
 <div class="popup" id="chartPopup"><div class="popup-inner" style="max-width:600px"><h3>📖 International Morse Code</h3><div class="morse-chart" id="morseChart"></div><button onclick="closePopups()">Close</button></div></div>
 
 <div class="c">
@@ -170,7 +159,6 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 </div>
 </div>
 
-<!-- CONTROL PANEL -->
 <div class="control-panel" id="ctrlPanel">
 <div class="cp-row"><label>WPM:</label><input type="range" id="wpmSlider" min="5" max="40" value="18"><span id="wpmVal">18</span></div>
 <div class="cp-row"><label>Rec Volume:</label><input type="range" id="recVol" min="0" max="100" value="50"><span id="recVolVal">50</span></div>
@@ -186,8 +174,8 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 </div>
 
 <script>
-// ============ GLOBALS ============
 const MP={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..","0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--","/":"-..-.","@":".--.-."," ":"/"};
+const RM={};for(const[k,v]of Object.entries(MP))RM[v]=k;
 const countries={US:'United States',GB:'United Kingdom',DE:'Germany',BR:'Brazil',JP:'Japan',FR:'France',IT:'Italy',CA:'Canada',AU:'Australia',IN:'India',RU:'Russia',CN:'China',KR:'South Korea',ES:'Spain',MX:'Mexico',NL:'Netherlands',SE:'Sweden',NO:'Norway',DK:'Denmark',FI:'Finland',PL:'Poland',UA:'Ukraine',TR:'Turkey',GR:'Greece',PT:'Portugal',AR:'Argentina',CL:'Chile',CO:'Colombia',PE:'Peru',ZA:'South Africa',EG:'Egypt',NG:'Nigeria',KE:'Kenya',MA:'Morocco',AE:'UAE',SA:'Saudi Arabia',IL:'Israel',TH:'Thailand',VN:'Vietnam',PH:'Philippines',MY:'Malaysia',ID:'Indonesia',NZ:'New Zealand',SG:'Singapore',PK:'Pakistan'};
 
 let wpm=18,recVol=50,keyVol=50,keyFreq=600,submitDelay=12,keyMode='straight',paddleOrder='left',showLetters=true;
@@ -195,11 +183,8 @@ let ctx=null,playing=false,muted=false,myId=0,myUsername='',myCallsign='',myChan
 let morseBuffer='',morseTimeout=null,keyDown=false,keyDownTime=0,iambicSide=null;
 
 const $=id=>document.getElementById(id);
-
 function now(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0')}
 function iA(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume()}
-
-// ============ POPUPS ============
 function closePopups(){document.querySelectorAll('.popup').forEach(p=>p.classList.remove('vi'))}
 function showLogin(){closePopups();$('loginPopup').classList.add('vi')}
 function showRegister(){closePopups();$('registerPopup').classList.add('vi');populateCountries()}
@@ -207,11 +192,8 @@ function showChart(){closePopups();$('chartPopup').classList.add('vi');buildChar
 function showTutorial(){$('tutorialPopup').classList.add('vi')}
 function closeTutorial(){if($('dontShowAgain').checked)localStorage.setItem('morse_tutorial_done','1');closePopups()}
 function toggleControls(){$('ctrlPanel').classList.toggle('vi')}
-
-// ============ TUTORIAL AUTO-SHOW ============
 if(!localStorage.getItem('morse_tutorial_done'))$('tutorialPopup').classList.add('vi');
 
-// ============ COUNTRY DROPDOWN ============
 function populateCountries(){
 const sel=$('regCountry');sel.innerHTML='<option value="">Select Country</option>';
 for(const[code,name]of Object.entries(countries))sel.innerHTML+=`<option value="${code}">${code} - ${name}</option>`;
@@ -219,26 +201,21 @@ $('regCountry').addEventListener('change',()=>{$('previewCallsign').textContent=
 $('regSuffix').addEventListener('input',()=>{$('previewCallsign').textContent=($('regCountry').value||'XX')+'-'+$('regSuffix').value.toUpperCase()});
 }
 
-// ============ MORSE CHART ============
 function buildChart(){
 let html='';
 for(const[k,v]of Object.entries(MP)){if(k===' ')continue;html+=`<div onclick="playChar('${v}')"><div class="letter">${k}</div><div class="code">${v}</div></div>`}
 $('morseChart').innerHTML=html;
 }
-async function playChar(code){
-iA();playing=true;const dot=1200/wpm;
-for(const c of code){
-if(c==='.'){await tone(dot/1000,keyFreq,keyVol/100)}else if(c==='-'){await tone(dot*3/1000,keyFreq,keyVol/100)}
-await sleep(dot);
-}
-playing=false;
-}
+async function playChar(code){iA();playing=true;const dot=1200/wpm;for(const c of code){if(c==='.')await tone(dot/1000,keyFreq,keyVol/100);else if(c==='-')await tone(dot*3/1000,keyFreq,keyVol/100);await sleep(dot);}playing=false;}
 
-// ============ AUDIO ============
 function tone(d,f,v){return new Promise(r=>{if(!ctx||muted){r();return}const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(f||keyFreq,ctx.currentTime);const t=ctx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v||.5,t+.003);g.gain.setValueAtTime(v||.5,t+d-.003);g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d);o.onended=()=>r()})}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-// ============ MORSE KEY ============
+// MORSE CONVERSION
+function toMorse(t){return t.toUpperCase().split('').map(c=>MP[c]||'').filter(c=>c).join(' ')}
+function morseToText(m){if(!m)return'';const words=m.trim().split(' / ');return words.map(w=>w.split(' ').map(s=>RM[s]||'').join('')).join(' ');}
+
+// MORSE KEY
 const mk=$('morseKey');
 mk.addEventListener('mousedown',e=>{e.preventDefault();keyDown=true;keyDownTime=Date.now();mk.classList.add('pressed');if(keyMode==='iambic'){const rect=mk.getBoundingClientRect();iambicSide=(e.clientX<rect.left+rect.width/2)?'left':'right'}startTone()});
 mk.addEventListener('mouseup',()=>{releaseKey()});
@@ -249,39 +226,28 @@ mk.addEventListener('touchend',()=>{releaseKey()});
 document.addEventListener('keydown',e=>{
 if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
 if(e.code==='Space'){e.preventDefault();if(!keyDown){keyDown=true;keyDownTime=Date.now();mk.classList.add('pressed');startTone()}}
-if(keyMode==='iambic'){
-if(e.code==='KeyZ'){e.preventDefault();iambicSide=paddleOrder==='left'?'left':'right';keyDown=true;keyDownTime=Date.now();startTone()}
-if(e.code==='KeyX'){e.preventDefault();iambicSide=paddleOrder==='left'?'right':'left';keyDown=true;keyDownTime=Date.now();startTone()}
-}
+if(keyMode==='iambic'){if(e.code==='KeyZ'){e.preventDefault();iambicSide=paddleOrder==='left'?'left':'right';keyDown=true;keyDownTime=Date.now();startTone()}if(e.code==='KeyX'){e.preventDefault();iambicSide=paddleOrder==='left'?'right':'left';keyDown=true;keyDownTime=Date.now();startTone()}}
 });
 document.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyX')releaseKey()});
 
 function startTone(){iA();playing=true;lOn()}
 function releaseKey(){
-if(!keyDown)return;
-keyDown=false;playing=false;lOff();mk.classList.remove('pressed');
-const duration=Date.now()-keyDownTime;
-const dotLen=1200/wpm;
-if(duration<dotLen*1.5)morseBuffer+='.';
-else morseBuffer+='-';
-clearTimeout(morseTimeout);
-morseTimeout=setTimeout(flushMorse,submitDelay*50);
-updateMorsePreview();
+if(!keyDown)return;keyDown=false;playing=false;lOff();mk.classList.remove('pressed');
+const duration=Date.now()-keyDownTime;const dotLen=1200/wpm;
+if(duration<dotLen*1.5)morseBuffer+='.';else morseBuffer+='-';
+clearTimeout(morseTimeout);morseTimeout=setTimeout(flushMorse,submitDelay*50);updateMorsePreview();
 }
 function flushMorse(){
-if(!morseBuffer)return;
-const text=morseBuffer;
-morseBuffer='';
-$('morsePreview').textContent='';
-if(!connected)return;
-sendWS({type:'morseMsg',morse:text,text:''});
-addMsg('sent','[Morse: '+text+']');
+if(!morseBuffer)return;const morse=morseBuffer;morseBuffer='';$('morsePreview').textContent='';
+if(!connected)return;const decoded=morseToText(morse);
+sendWS({type:'morseMsg',morse:morse,text:decoded});
+addMsg('sent',decoded||'[Morse: '+morse+']',myUsername,myCallsign,morse);
 }
 function updateMorsePreview(){$('morsePreview').textContent='🔘 '+morseBuffer}
 function lOn(){$('light').classList.add('on');$('light').style.background='#fff'}
 function lOff(){$('light').classList.remove('on');$('light').style.background=''}
 
-// ============ CONNECT ============
+// WEBSOCKET
 function connectWS(){
 if(ws)try{ws.close()}catch(e){}
 ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host);
@@ -296,7 +262,7 @@ if(d.type==='channelChanged'){myChannel=d.channel;updateChannelButtons();addSys(
 if(d.type==='channelUsers')updateUserList(d.users||[]);
 if(d.type==='system'&&d.channel===myChannel)addSys(d.text);
 if(d.type==='msg'){if(d.channel===myChannel)addMsg('received',d.text||d.morse,d.fromUsername||'Unknown',d.fromCallsign);playMorseMsg(d.morse||d.text)}
-if(d.type==='morseMsg'){if(d.channel===myChannel)addMsg('received','[Morse] '+d.morse,d.fromUsername||'Unknown',d.fromCallsign);playMorseMsg(d.morse)}
+if(d.type==='morseMsg'){if(d.channel===myChannel){const decoded=d.text||morseToText(d.morse);addMsg('received',decoded||'[Morse: '+d.morse+']',d.fromUsername||'Unknown',d.fromCallsign,d.morse);}playMorseMsg(d.morse)}
 if(d.type==='pm')addMsg('pm',d.text,'ADMIN');
 if(d.type==='loginResult'&&d.success){authenticated=true;myCallsign=d.callsign;myUsername=d.username;closePopups();updateUI();addSys('✅ Logged in as '+d.callsign)}
 if(d.type==='registerResult'&&d.success){authenticated=true;myCallsign=d.callsign;myUsername=d.username;closePopups();updateUI();addSys('✅ Registered: '+d.callsign)}
@@ -308,62 +274,44 @@ ws.onclose=()=>{connected=false;$('sdot').className='sd';$('stxt').className='st
 }
 function sendWS(msg){if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(msg))}
 
-// ============ UI ============
-function updateUI(){
-$('userInfo').textContent=authenticated?myCallsign||myUsername:'Guest';
-$('btnLogin').style.display=authenticated?'none':'inline-block';
-$('btnLogout').style.display=authenticated?'inline-block':'none';
-}
+// UI
+function updateUI(){$('userInfo').textContent=authenticated?myCallsign||myUsername:'Guest';$('btnLogin').style.display=authenticated?'none':'inline-block';$('btnLogout').style.display=authenticated?'inline-block':'none'}
 function updateChannelButtons(){document.querySelectorAll('.ch-btn').forEach(b=>b.classList.toggle('act',b.dataset.ch===myChannel))}
-function updateUserList(users){
-let html='';
-users.forEach(u=>{html+=`<div class="user-item" onclick="showProfile('${u.username||'Unknown'}','${u.callsign||''}','${u.country||''}','${u.channel||''}')"><span class="dot"></span><span class="uname">${u.username||u.callsign||'Unknown'}</span><span class="csign">${u.callsign||''}</span></div>`});
-$('userList').innerHTML=html||'<div style="color:#444;font-size:.45rem">No users</div>';
-}
-function showProfile(uname,csign,country,ch){
-$('profileContent').innerHTML=`<p><b>Username:</b> ${uname}</p><p><b>Callsign:</b> ${csign||'N/A'}</p><p><b>Country:</b> ${country||'N/A'}</p><p><b>Channel:</b> ${ch||'N/A'}</p>`;
-$('profilePopup').classList.add('vi');
-}
+function updateUserList(users){let html='';users.forEach(u=>{html+=`<div class="user-item" onclick="showProfile('${u.username||'Unknown'}','${u.callsign||''}','${u.country||''}','${u.channel||''}')"><span class="dot"></span><span class="uname">${u.username||u.callsign||'Unknown'}</span><span class="csign">${u.callsign||''}</span></div>`});$('userList').innerHTML=html||'<div style="color:#444;font-size:.45rem">No users</div>'}
+function showProfile(uname,csign,country,ch){$('profileContent').innerHTML=`<p><b>Username:</b> ${uname}</p><p><b>Callsign:</b> ${csign||'N/A'}</p><p><b>Country:</b> ${country||'N/A'}</p><p><b>Channel:</b> ${ch||'N/A'}</p>`;$('profilePopup').classList.add('vi')}
 
-// ============ CHAT ============
-function addMsg(type,text,from,callsign){
+// CHAT
+function addMsg(type,text,from,callsign,morseOverride){
 const d=document.createElement('div');d.className='msg '+(type==='sent'?'ms':type==='received'?'mr':type==='pm'?'mp':'my');
 const label=type==='sent'?'📤 YOU':type==='pm'?'🔒 PM':'📥 '+(from||'Unknown');
-const morse=text&&!text.startsWith('[Morse')?toMorse(text):'';
+const morse=morseOverride||(text&&!text.startsWith('[Morse')?toMorse(text):'');
 d.innerHTML=`<div class="ml" onclick="if('${callsign||''}')showProfile('${from||''}','${callsign||''}','','${myChannel}')"><span class="ch-tag">${myChannel}</span> ${label}${callsign?' <span style="color:#888;font-size:.4rem">('+callsign+')</span>':''}<span class="mtick">${now()}</span></div>${showLetters&&morse?`<div class="mm">${morse}</div>`:''}<div class="mtx">${text}</div>`;
 $('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight;
 }
 function addSys(text){const d=document.createElement('div');d.className='msg my';d.textContent=text;$('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight}
-function toMorse(t){return t.toUpperCase().split('').map(c=>MP[c]||'').filter(c=>c).join(' ')}
+
 async function playMorseMsg(str){
 if(!str||muted)return;
 const morse=str.startsWith('[Morse')?str.replace('[Morse] ','').trim():toMorse(str);
 iA();const dot=1200/wpm;
-for(const c of morse){
-if(c==='.'){await tone(dot/1000,keyFreq,recVol/100)}else if(c==='-'){await tone(dot*3/1000,keyFreq,recVol/100)}else await sleep(dot);
-await sleep(dot);
+for(const c of morse){if(c==='.')await tone(dot/1000,keyFreq,recVol/100);else if(c==='-')await tone(dot*3/1000,keyFreq,recVol/100);else await sleep(dot);await sleep(dot);}
 }
-}
+
 function sendChat(){
 const text=$('chatIn').value.trim();if(!text||!connected)return;
 sendWS({type:'msg',text:text,morse:toMorse(text)});
-addMsg('sent',text,myUsername,myCallsign);
-$('chatIn').value='';$('chatIn').focus();
+addMsg('sent',text,myUsername,myCallsign);$('chatIn').value='';$('chatIn').focus();
 }
 
-// ============ LOGIN/REGISTER ============
+// LOGIN
 function doLogin(){const u=$('loginUser').value.trim();const p=$('loginPass').value;if(!u||!p)return;sendWS({type:'login',username:u,password:p})}
-function doRegister(){
-const u=$('regUser').value.trim();const p=$('regPass').value;const c=$('regCountry').value;const s=$('regSuffix').value.trim();
-if(!u||!p||!c||!s||s.length!==5){$('regErr').textContent='All fields required. Suffix=5 chars.';return}
-sendWS({type:'register',username:u,password:p,country:c,callsignSuffix:s});
-}
+function doRegister(){const u=$('regUser').value.trim();const p=$('regPass').value;const c=$('regCountry').value;const s=$('regSuffix').value.trim();if(!u||!p||!c||!s||s.length!==5){$('regErr').textContent='All fields required. Suffix=5 chars.';return}sendWS({type:'register',username:u,password:p,country:c,callsignSuffix:s})}
 function doLogout(){authenticated=false;myCallsign='';myUsername='OP'+myId;updateUI();addSys('Logged out')}
 
-// ============ CHANNELS ============
+// CHANNELS
 document.querySelectorAll('.ch-btn').forEach(b=>b.addEventListener('click',()=>{const ch=b.dataset.ch;if(ch===myChannel)return;sendWS({type:'joinChannel',channel:ch})}));
 
-// ============ CONTROLS ============
+// CONTROLS
 $('wpmSlider').addEventListener('input',()=>{wpm=parseInt($('wpmSlider').value);$('wpmVal').textContent=wpm});
 $('recVol').addEventListener('input',()=>{recVol=parseInt($('recVol').value);$('recVolVal').textContent=recVol});
 $('keyVol').addEventListener('input',()=>{keyVol=parseInt($('keyVol').value);$('keyVolVal').textContent=keyVol});
@@ -373,17 +321,14 @@ $('keyMode').addEventListener('change',()=>{keyMode=$('keyMode').value});
 $('paddleOrder').addEventListener('change',()=>{paddleOrder=$('paddleOrder').value});
 $('showLetters').addEventListener('change',()=>{showLetters=$('showLetters').value==='on'});
 
-// ============ BUTTONS ============
+// BUTTONS
 $('btnChatSend').addEventListener('click',sendChat);
 $('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat()}});
 $('btnChatClear').addEventListener('click',()=>{$('chatLog').innerHTML=''});
 $('btnTest').addEventListener('click',()=>{sendWS({type:'test'});addMsg('sent','TEST SIGNAL',myUsername,myCallsign);playMorseMsg('... --- ...')});
 $('btnMute').addEventListener('click',()=>{muted=!muted;$('btnMute').textContent=muted?'🔇':'🔊'});
 
-// ============ START ============
-connectWS();
-updateUI();
+connectWS();updateUI();
 </script>
 </body>
 </html>
-
