@@ -5,200 +5,384 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📻 Morse Center</title>
 <style>
-:root{--bg:#0a0a0a;--pn:#161616;--bd:#2a2a2a;--tx:#c8c8c8;--ac:#f0c040;--mo:#4fc3f7;--st:#4caf50;--rc:#ff9800;--pm:#ff69b4;--sc:#00ff88;--mu:#e91e63}
+:root{--bg:#0a0a0a;--pn:#161616;--bd:#2a2a2a;--tx:#c8c8c8;--ac:#f0c040;--mo:#4fc3f7;--st:#4caf50;--rc:#ff9800;--pm:#ff69b4;--sc:#00ff88;--mu:#e91e63;--er:#f44336}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Courier New',monospace;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:10px;transition:background .08s}
 body.flash{background:#fff}
-.c{background:var(--pn);border-radius:12px;padding:16px 20px;width:100%;max-width:900px;box-shadow:0 20px 60px rgba(0,0,0,.7);border:1px solid var(--bd)}
-.hd{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.c{background:var(--pn);border-radius:12px;padding:16px 20px;width:100%;max-width:950px;box-shadow:0 20px 60px rgba(0,0,0,.7);border:1px solid var(--bd)}
+.hd{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .hd h1{font-size:1.1rem;color:var(--ac);letter-spacing:3px}
-.mt{display:flex;border:1px solid var(--bd);border-radius:5px;overflow:hidden}
-.mtb{padding:5px 10px;background:#111;color:#666;border:none;cursor:pointer;font-family:inherit;font-size:.58rem;letter-spacing:2px;font-weight:bold;transition:.3s}
-.mtb.act{background:var(--ac);color:#000}
-.name-row{display:flex;align-items:center;gap:5px;margin-bottom:6px}
-.name-row input{padding:4px 8px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;color:var(--ac);font-family:inherit;font-size:.6rem;width:130px}
-.name-row button{padding:4px 8px;background:var(--ac);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.55rem;font-weight:bold}
-.sb{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:5px 8px;background:#0f0f0f;border-radius:5px;border:1px solid #1a1a1a;font-size:.5rem}
+.top-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.btn-sm{padding:5px 10px;background:#1a1a1a;color:#888;border:1px solid #2a2a2a;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.55rem;letter-spacing:1px;transition:.3s;white-space:nowrap}
+.btn-sm:hover{background:#2a2a2a;color:#ccc}
+.btn-sm.act{background:var(--ac);color:#000;border-color:var(--ac)}
+.ch-sel{display:flex;gap:4px;flex-wrap:wrap}
+.ch-btn{padding:5px 10px;background:#111;color:#444;border:1px solid #2a2a2a;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.58rem;font-weight:bold;letter-spacing:1px;transition:.3s}
+.ch-btn:hover{background:#1a1a1a;color:#aaa}
+.ch-btn.act{background:var(--ac);color:#000;border-color:var(--ac);box-shadow:0 0 10px rgba(240,192,64,.3)}
+.ch-btn.pro{border-color:#e91e63}.ch-btn.pro.act{background:#e91e63;color:#fff}
+.ch-btn.train{border-color:#2196F3}.ch-btn.train.act{background:#2196F3;color:#fff}
+.sb{display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:5px 8px;background:#0f0f0f;border-radius:5px;border:1px solid #1a1a1a;font-size:.5rem}
 .sd{width:7px;height:7px;border-radius:50%;background:#333;flex-shrink:0}
 .sd.cn{background:#4caf50;box-shadow:0 0 6px #4caf50;animation:pu 2s infinite}
-.sd.tx{background:#ff9800;box-shadow:0 0 10px #ff9800;animation:pu .5s infinite}
-.sd.rx{background:#4fc3f7;box-shadow:0 0 10px #4fc3f7;animation:pu .3s infinite}
+.sd.er{background:#f44336;box-shadow:0 0 6px #f44336}
 @keyframes pu{0%,100%{opacity:1}50%{opacity:.35}}
-.stx{flex:1;color:#666}.stx.cn{color:#4caf50}
+.stx{flex:1;color:#666}.stx.cn{color:#4caf50}.stx.er{color:#f44336}
 .lt{width:24px;height:24px;border-radius:50%;background:#1a1a1a;border:2px solid #333;transition:background .04s;flex-shrink:0}
 .lt.on{background:#fff;box-shadow:0 0 20px #fff,0 0 35px #ff9800;border-color:#ff9800}
-.sc{display:none}.sc.act{display:block}
-.cl{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:7px;height:280px;overflow-y:auto;padding:10px;margin-bottom:6px;font-size:.6rem;line-height:1.4}
+.main-area{display:flex;gap:10px;margin-bottom:8px}
+.chat-col{flex:1;min-width:0}
+.user-col{width:180px;flex-shrink:0}
+.cl{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:7px;height:300px;overflow-y:auto;padding:8px;font-size:.6rem;line-height:1.4}
 .cl::-webkit-scrollbar{width:3px}.cl::-webkit-scrollbar-track{background:#0a0a0a}.cl::-webkit-scrollbar-thumb{background:#2a2a2a}
-.msg{margin-bottom:6px;padding:6px 8px;border-radius:6px;animation:fi .3s;position:relative}
-@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.ms{background:linear-gradient(135deg,#0a1a0a,#0d1f0d);border-left:3px solid var(--st);margin-left:20px}
-.mr{background:linear-gradient(135deg,#1a0a00,#1f1000);border-left:3px solid var(--rc);margin-right:20px}
-.mp{background:linear-gradient(135deg,#1a0020,#20002a);border-left:3px solid var(--pm);margin:0 20px}
-.my{background:0;border:none;text-align:center;color:#444;font-style:italic;font-size:.5rem;padding:2px}
-.ml{font-size:.5rem;letter-spacing:2px;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.user-list{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:7px;height:300px;overflow-y:auto;padding:8px;font-size:.55rem}
+.user-list::-webkit-scrollbar{width:3px}.user-list::-webkit-scrollbar-track{background:#0a0a0a}.user-list::-webkit-scrollbar-thumb{background:#2a2a2a}
+.user-item{padding:4px 6px;border-radius:3px;cursor:pointer;margin-bottom:3px;transition:.2s;display:flex;align-items:center;gap:4px}
+.user-item:hover{background:#1a1a1a}
+.user-item .dot{width:5px;height:5px;border-radius:50%;background:#4caf50;flex-shrink:0}
+.user-item .uname{color:var(--ac);font-weight:bold;font-size:.5rem}
+.user-item .csign{color:#666;font-size:.45rem}
+.msg{margin-bottom:4px;padding:4px 7px;border-radius:5px;animation:fi .3s}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.ms{background:#0a1a0a;border-left:3px solid var(--st);margin-left:15px}
+.mr{background:#1a0a00;border-left:3px solid var(--rc);margin-right:15px}
+.mp{background:#1a0020;border-left:3px solid var(--pm);margin:0 15px}
+.my{background:0;border:none;text-align:center;color:#444;font-style:italic;font-size:.48rem;padding:2px}
+.ml{font-size:.5rem;letter-spacing:1px;margin-bottom:2px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.ml:hover{text-decoration:underline}
 .ms .ml{color:var(--st)}.mr .ml{color:var(--rc)}.mp .ml{color:var(--pm)}
-.mtick{font-size:.4rem;color:#555;letter-spacing:0;margin-left:auto}
-.mm{color:var(--mo);letter-spacing:2px;font-size:.55rem;margin-bottom:3px;padding:3px 5px;background:rgba(79,195,247,.08);border-radius:3px;display:inline-block}
-.mtx{color:#ddd;font-size:.62rem;word-break:break-word}
+.mtick{font-size:.4rem;color:#555;margin-left:auto}
+.mm{color:var(--mo);letter-spacing:2px;font-size:.5rem;margin-bottom:2px;padding:2px 5px;background:rgba(79,195,247,.08);border-radius:3px;display:inline-block}
+.mtx{color:#ddd;font-size:.58rem;word-break:break-word}
+.ch-tag{font-size:.4rem;padding:1px 4px;border-radius:3px;background:#1a1a1a;color:var(--ac)}
+.morse-key-area{text-align:center;margin:8px 0}
+.morse-key{width:120px;height:120px;border-radius:50%;background:#1a1a1a;border:4px solid #333;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--ac);transition:.1s;user-select:none;-webkit-user-select:none}
+.morse-key:active,.morse-key.pressed{background:#f0c040;color:#000;border-color:#f0c040;box-shadow:0 0 40px rgba(240,192,64,.6);transform:scale(.95)}
+.morse-key.iambic{width:160px;border-radius:30px}
+.morse-key .left-pad,.morse-key .right-pad{width:70px;height:120px;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem}
+.morse-key .left-pad:active,.morse-key .right-pad:active{color:#000}
 .cr{display:flex;gap:5px;margin-bottom:5px}
 .cr input{flex:1;padding:7px 10px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:5px;color:var(--ac);font-family:inherit;font-size:.7rem}
 .cr input:focus{outline:none;border-color:var(--ac)}
-.cr input::placeholder{color:#333}
 .bs{padding:7px 12px;background:var(--st);color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:bold;letter-spacing:2px;font-size:.6rem;transition:.3s}
 .bs:hover{box-shadow:0 0 12px rgba(76,175,80,.5)}
-textarea{width:100%;padding:8px;border-radius:5px;border:1px solid #2a2a2a;background:#0f0f0f;color:var(--ac);font-family:inherit;font-size:.75rem;resize:vertical;min-height:65px;margin-bottom:6px}
-textarea:focus{outline:none;border-color:var(--ac)}
-.ob{background:#0a0a0a;padding:8px;border-radius:5px;min-height:38px;word-wrap:break-word;font-size:.85rem;letter-spacing:2px;color:var(--mo);border:1px solid #1a1a1a;line-height:1.5;margin-bottom:6px}
-.ob.em{color:#333;font-style:italic;font-size:.7rem}
-.ctr{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:2px}
+.ctr{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
 button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-weight:bold;letter-spacing:1px;font-size:.55rem;transition:.3s;white-space:nowrap}
-.bp{background:#4caf50;color:#fff}.bst{background:#f44336;color:#fff}.bf{background:#ff9800;color:#000}.bc{background:#2196F3;color:#fff}.bw{background:#9c27b0;color:#fff}.bcl{background:#444;color:#fff}.bsw{background:#607d8b;color:#fff}.bts{background:#ff5722;color:#fff}
+.bcl{background:#444;color:#fff}.bts{background:#ff5722;color:#fff}
 .bmu{background:#333;color:#aaa;border:1px solid #444}.bmu.mu{background:var(--mu);color:#fff}
-.bsc{background:#003320;color:var(--sc);border:1px solid var(--sc)}
-.sg{display:flex;align-items:center;gap:3px;color:#777;font-size:.5rem}
-.sg input[type=range]{width:50px;accent-color:var(--ac)}.sg span{min-width:28px;font-size:.45rem}
-.sm{text-align:center;font-size:.55rem;color:#444;min-height:10px;margin-top:2px}
-.sk{text-align:center;font-size:.45rem;color:#2a2a2a;margin-top:2px}
-.kb{background:#0f0f0f;border:1px solid #1a1a1a;border-radius:8px;padding:10px;margin-bottom:8px;display:none}
-.kb.vi{display:block}
-.kb-row{display:flex;gap:4px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
-.kb-key{width:36px;height:36px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;color:var(--tx);font-family:inherit;font-size:.62rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.kb-key:hover{background:#2a2a2a;border-color:var(--ac);color:var(--ac)}
-.kb-key .km{font-size:.48rem;color:var(--mo)}
-.kb-key.space{width:110px}.kb-key.back{width:50px}.kb-key.enter{width:50px}
+.control-panel{background:#0f0f0f;border:1px solid #1a1a1a;border-radius:8px;padding:10px;margin-top:8px;display:none}
+.control-panel.vi{display:block}
+.cp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.55rem;flex-wrap:wrap}
+.cp-row label{color:#888;min-width:80px}
+.cp-row input[type=range]{flex:1;accent-color:var(--ac);max-width:150px}
+.cp-row span{color:var(--ac);min-width:35px;text-align:right}
+.cp-row select{padding:3px 6px;background:#1a1a1a;border:1px solid #2a2a2a;color:var(--ac);font-family:inherit;font-size:.55rem;border-radius:3px}
+/* Popups */
+.popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:100;justify-content:center;align-items:center}
+.popup.vi{display:flex}
+.popup-inner{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:20px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto}
+.popup-inner h3{color:var(--ac);text-align:center;margin-bottom:10px;font-size:.8rem}
+.popup-inner input{width:100%;padding:8px;margin:5px 0;background:#0f0f0f;border:1px solid #2a2a2a;color:var(--ac);font-family:inherit;font-size:.7rem;border-radius:4px}
+.popup-inner select{width:100%;padding:8px;margin:5px 0;background:#0f0f0f;border:1px solid #2a2a2a;color:var(--ac);font-family:inherit;font-size:.7rem;border-radius:4px}
+.popup-inner button{padding:8px 20px;margin:5px;background:var(--ac);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:bold;font-size:.65rem}
+.popup-close{position:absolute;top:10px;right:15px;color:#888;cursor:pointer;font-size:1.2rem}
+/* Morse chart */
+.morse-chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px;font-size:.55rem}
+.morse-chart div{padding:4px;background:#0a0a0a;border-radius:3px;text-align:center;cursor:pointer}
+.morse-chart div:hover{background:#1a1a1a}
+.morse-chart .letter{color:var(--ac);font-weight:bold}
+.morse-chart .code{color:var(--mo);font-size:.5rem}
+.footer{text-align:center;font-size:.45rem;color:#333;margin-top:6rem;padding-top:4px;border-top:1px solid #1a1a1a}
 </style>
 </head>
 <body>
+
+<!-- TUTORIAL POPUP -->
+<div class="popup" id="tutorialPopup">
+<div class="popup-inner">
+<h3>👋 Welcome to Morse Center!</h3>
+<p style="font-size:.6rem;color:#aaa;margin-bottom:8px">Online Morse Code Chat</p>
+<div style="font-size:.55rem;color:#ccc;line-height:1.6">
+<p>🔘 <b>Morse Key:</b> Tap SPACEBAR for dot, hold for dash</p>
+<p>⌨️ <b>Keyboard:</b> Type normally — auto-converted to Morse</p>
+<p>📖 <b>Chart:</b> Click 📖 to see all Morse codes</p>
+<p>👥 <b>Users:</b> See who's online, click name for profile</p>
+<p>🎓 <b>CH5-6:</b> Training (slow, letters shown)</p>
+<p>🏆 <b>CH7-8:</b> Pro (fast, login required)</p>
+<p>⚙️ <b>Controls:</b> Adjust WPM, volume, pitch</p>
+</div>
+<p style="font-size:.55rem;color:var(--ac);margin-top:8px">📧 kanishkadilshan213@gmail.com</p>
+<label style="font-size:.5rem;color:#888"><input type="checkbox" id="dontShowAgain"> Don't show this again</label>
+<button onclick="closeTutorial()">Get Started</button>
+</div>
+</div>
+
+<!-- LOGIN POPUP -->
+<div class="popup" id="loginPopup"><div class="popup-inner"><h3>🔐 Login</h3><input type="text" id="loginUser" placeholder="Username"><input type="password" id="loginPass" placeholder="Password"><button onclick="doLogin()">Login</button><button onclick="showRegister()" style="background:#333;color:#fff">Register</button><button onclick="closePopups()" style="background:#444;color:#fff">Cancel</button><div id="loginErr" style="color:var(--er);font-size:.55rem;text-align:center"></div></div></div>
+
+<!-- REGISTER POPUP -->
+<div class="popup" id="registerPopup"><div class="popup-inner"><h3>📝 Register</h3><input type="text" id="regUser" placeholder="Username"><input type="password" id="regPass" placeholder="Password"><select id="regCountry"><option value="">Select Country</option></select><input type="text" id="regSuffix" placeholder="Callsign suffix (5 letters/numbers)" maxlength="5"><p style="font-size:.5rem;color:#888">Callsign: <span id="previewCallsign">XX-XXXXX</span></p><button onclick="doRegister()">Register</button><button onclick="showLogin()" style="background:#333;color:#fff">Back to Login</button><button onclick="closePopups()" style="background:#444;color:#fff">Cancel</button><div id="regErr" style="color:var(--er);font-size:.55rem;text-align:center"></div></div></div>
+
+<!-- PROFILE POPUP -->
+<div class="popup" id="profilePopup"><div class="popup-inner"><h3>🪪 Operator Profile</h3><div id="profileContent" style="font-size:.6rem;color:#ccc"></div><button onclick="closePopups()">Close</button></div></div>
+
+<!-- MORSE CHART POPUP -->
+<div class="popup" id="chartPopup"><div class="popup-inner" style="max-width:600px"><h3>📖 International Morse Code</h3><div class="morse-chart" id="morseChart"></div><button onclick="closePopups()">Close</button></div></div>
+
 <div class="c">
-<div class="hd"><h1>📻 MORSE CENTER</h1>
-<div class="mt"><button class="mtb act" id="btnt">🔤 TRANSLATOR</button><button class="mtb" id="btnc">💬 CHAT</button></div>
+<div class="hd"><h1>📻 MORSE CENTER</h1><span style="font-size:.5rem;color:#666">v3.0</span></div>
+
+<div class="top-row">
+<button class="btn-sm" id="btnLogin" onclick="showLogin()">🔐 Login</button>
+<button class="btn-sm" id="btnLogout" onclick="doLogout()" style="display:none">🚪 Logout</button>
+<button class="btn-sm" id="btnControls" onclick="toggleControls()">⚙️ Controls</button>
+<button class="btn-sm" onclick="showChart()">📖 Chart</button>
+<button class="btn-sm" id="btnTutorial" onclick="showTutorial()">❓ Help</button>
+<span id="userInfo" style="color:var(--ac);font-size:.55rem;margin-left:auto"></span>
 </div>
 
-<div class="name-row"><span style="color:#666;font-size:.5rem;">Name:</span><input type="text" id="nameInput" placeholder="Your name..." maxlength="20"><button id="btnSetName">Set</button><span id="nameDisplay" style="color:var(--ac);font-size:.55rem;margin-left:8px;"></span></div>
-
-<div class="sb"><div class="sd" id="sdot"></div><span class="stx" id="stxt">Connecting...</span><button class="bmu" id="btnMute">🔊</button><button class="bsc" id="btnKb">⌨️</button><div class="lt" id="light"></div></div>
-
-<!-- KEYBOARD -->
-<div class="kb" id="keyboard">
-<div class="kb-row"><button class="kb-key" data-char="A">A<span class="km">.-</span></button><button class="kb-key" data-char="B">B<span class="km">-...</span></button><button class="kb-key" data-char="C">C<span class="km">-.-.</span></button><button class="kb-key" data-char="D">D<span class="km">-..</span></button><button class="kb-key" data-char="E">E<span class="km">.</span></button><button class="kb-key" data-char="F">F<span class="km">..-.</span></button><button class="kb-key" data-char="G">G<span class="km">--.</span></button><button class="kb-key" data-char="H">H<span class="km">....</span></button><button class="kb-key" data-char="I">I<span class="km">..</span></button><button class="kb-key" data-char="J">J<span class="km">.---</span></button></div>
-<div class="kb-row"><button class="kb-key" data-char="K">K<span class="km">-.-</span></button><button class="kb-key" data-char="L">L<span class="km">.-..</span></button><button class="kb-key" data-char="M">M<span class="km">--</span></button><button class="kb-key" data-char="N">N<span class="km">-.</span></button><button class="kb-key" data-char="O">O<span class="km">---</span></button><button class="kb-key" data-char="P">P<span class="km">.--.</span></button><button class="kb-key" data-char="Q">Q<span class="km">--.-</span></button><button class="kb-key" data-char="R">R<span class="km">.-.</span></button><button class="kb-key" data-char="S">S<span class="km">...</span></button><button class="kb-key" data-char="T">T<span class="km">-</span></button></div>
-<div class="kb-row"><button class="kb-key" data-char="U">U<span class="km">..-</span></button><button class="kb-key" data-char="V">V<span class="km">...-</span></button><button class="kb-key" data-char="W">W<span class="km">.--</span></button><button class="kb-key" data-char="X">X<span class="km">-..-</span></button><button class="kb-key" data-char="Y">Y<span class="km">-.--</span></button><button class="kb-key" data-char="Z">Z<span class="km">--..</span></button><button class="kb-key" data-char="1">1<span class="km">.----</span></button><button class="kb-key" data-char="2">2<span class="km">..---</span></button><button class="kb-key" data-char="3">3<span class="km">...--</span></button><button class="kb-key" data-char="4">4<span class="km">....-</span></button></div>
-<div class="kb-row"><button class="kb-key" data-char="5">5<span class="km">.....</span></button><button class="kb-key" data-char="6">6<span class="km">-....</span></button><button class="kb-key" data-char="7">7<span class="km">--...</span></button><button class="kb-key" data-char="8">8<span class="km">---..</span></button><button class="kb-key" data-char="9">9<span class="km">----.</span></button><button class="kb-key" data-char="0">0<span class="km">-----</span></button><button class="kb-key" data-char=".">.<span class="km">.-.-.-</span></button><button class="kb-key" data-char=",">,<span class="km">--..--</span></button><button class="kb-key" data-char="?">?<span class="km">..--..</span></button><button class="kb-key" data-char="!">!<span class="km">-.-.--</span></button></div>
-<div class="kb-row"><button class="kb-key space" data-char=" ">SPACE</button><button class="kb-key back" data-char="BACK">⌫</button><button class="kb-key enter" data-char="ENTER">⏎</button></div>
+<div class="ch-sel" id="chSel">
+<button class="ch-btn act" data-ch="CH1">CH1</button>
+<button class="ch-btn" data-ch="CH2">CH2</button>
+<button class="ch-btn" data-ch="CH3">CH3</button>
+<button class="ch-btn" data-ch="CH4">CH4</button>
+<button class="ch-btn train" data-ch="CH5">🎓CH5</button>
+<button class="ch-btn train" data-ch="CH6">🎓CH6</button>
+<button class="ch-btn pro" data-ch="CH7">🏆CH7</button>
+<button class="ch-btn pro" data-ch="CH8">🏆CH8</button>
 </div>
 
-<!-- TRANSLATOR -->
-<div class="sc act" id="secT">
-<textarea id="txtIn" placeholder="Type or paste here..."></textarea>
-<div class="ob em" id="outBox">Morse code appears here...</div>
-<div class="ctr"><button class="bp" id="btnPlay">▶ Play</button><button class="bst" id="btnStop">■ Stop</button><button class="bf" id="btnFlash">💡 Flash</button><button class="bc" id="btnCopy">📋 Copy</button><button class="bw" id="btnWav">💾 WAV</button><button class="bsw" id="btnSwap">↔ Swap</button></div>
-<div class="ctr"><div class="sg">WPM:<input type="range" id="spdS" min="5" max="35" value="18"><span id="spdL">18</span></div><div class="sg">Hz:<input type="range" id="freqS" min="400" max="1200" value="700"><span id="freqL">700</span></div></div>
-</div>
+<div class="sb"><div class="sd" id="sdot"></div><span class="stx" id="stxt">Connecting...</span><button class="bmu" id="btnMute">🔊</button><div class="lt" id="light"></div></div>
 
-<!-- CHAT -->
-<div class="sc" id="secC">
+<div class="main-area">
+<div class="chat-col">
 <div class="cl" id="chatLog"><div class="my">📡 Connecting to server...</div></div>
-<div class="cr"><input type="text" id="chatIn" placeholder="Type message... (Enter to send)" maxlength="300"><button class="bs" id="btnChatSend">▶ SEND</button></div>
-<div class="ctr"><button class="bcl" id="btnChatClear">🗑 Clear</button><button class="bts" id="btnTest">📡 Test</button></div>
-<div class="sm" id="cStat"></div>
+<div class="morse-key-area">
+<div class="morse-key" id="morseKey">🔘</div>
+<div style="color:#666;font-size:.45rem;margin-top:3px">Tap = Dot | Hold = Dash | Spacebar too</div>
 </div>
-<div class="sk"><kbd>Ctrl+K</kbd> Keyboard | <kbd>Ctrl+M</kbd> Mute</div>
+<div class="cr"><input type="text" id="chatIn" placeholder="Type or use Morse key..." maxlength="300"><button class="bs" id="btnChatSend">▶ SEND</button></div>
+<div class="ctr"><button class="bcl" id="btnChatClear">🗑 Clear</button><button class="bts" id="btnTest">📡 Test</button><span id="morsePreview" style="color:var(--mo);font-size:.5rem;margin-left:8px"></span></div>
+</div>
+<div class="user-col">
+<div style="color:#888;font-size:.5rem;margin-bottom:4px;letter-spacing:1px">👥 ONLINE</div>
+<div class="user-list" id="userList"><div style="color:#444;font-size:.45rem">Loading...</div></div>
+</div>
+</div>
+
+<!-- CONTROL PANEL -->
+<div class="control-panel" id="ctrlPanel">
+<div class="cp-row"><label>WPM:</label><input type="range" id="wpmSlider" min="5" max="40" value="18"><span id="wpmVal">18</span></div>
+<div class="cp-row"><label>Rec Volume:</label><input type="range" id="recVol" min="0" max="100" value="50"><span id="recVolVal">50</span></div>
+<div class="cp-row"><label>Key Volume:</label><input type="range" id="keyVol" min="0" max="100" value="50"><span id="keyVolVal">50</span></div>
+<div class="cp-row"><label>Key Freq:</label><input type="range" id="keyFreq" min="400" max="1200" value="600"><span id="keyFreqVal">600Hz</span></div>
+<div class="cp-row"><label>Submit Delay:</label><input type="range" id="submitDelay" min="5" max="30" value="12"><span id="submitDelayVal">12</span></div>
+<div class="cp-row"><label>Key Mode:</label><select id="keyMode"><option value="straight">Straight</option><option value="iambic">Iambic A</option></select></div>
+<div class="cp-row"><label>Paddle Order:</label><select id="paddleOrder"><option value="left">Left = Dit</option><option value="right">Right = Dit</option></select></div>
+<div class="cp-row"><label>Show Letters:</label><select id="showLetters"><option value="on">On</option><option value="off">Off</option></select></div>
+</div>
+
+<div class="footer">📻 Morse Center v3 | 📧 kanishkadilshan213@gmail.com</div>
 </div>
 
 <script>
-const MP={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..","0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--"," ":"/"};
-const RM={};for(const[k,v]of Object.entries(MP))RM[v]=k;
-let wpm=18,freq=700,ctx=null,playing=false,tmr=null,mode='trans',muted=false,kbVis=false,myId=0,myName='',connected=false,ws=null;
+// ============ GLOBALS ============
+const MP={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..","0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--","/":"-..-.","@":".--.-."," ":"/"};
+const countries={US:'United States',GB:'United Kingdom',DE:'Germany',BR:'Brazil',JP:'Japan',FR:'France',IT:'Italy',CA:'Canada',AU:'Australia',IN:'India',RU:'Russia',CN:'China',KR:'South Korea',ES:'Spain',MX:'Mexico',NL:'Netherlands',SE:'Sweden',NO:'Norway',DK:'Denmark',FI:'Finland',PL:'Poland',UA:'Ukraine',TR:'Turkey',GR:'Greece',PT:'Portugal',AR:'Argentina',CL:'Chile',CO:'Colombia',PE:'Peru',ZA:'South Africa',EG:'Egypt',NG:'Nigeria',KE:'Kenya',MA:'Morocco',AE:'UAE',SA:'Saudi Arabia',IL:'Israel',TH:'Thailand',VN:'Vietnam',PH:'Philippines',MY:'Malaysia',ID:'Indonesia',NZ:'New Zealand',SG:'Singapore',PK:'Pakistan'};
+
+let wpm=18,recVol=50,keyVol=50,keyFreq=600,submitDelay=12,keyMode='straight',paddleOrder='left',showLetters=true;
+let ctx=null,playing=false,muted=false,myId=0,myUsername='',myCallsign='',myChannel='CH1',myCountry='',authenticated=false,isAdmin=false,connected=false,ws=null;
+let morseBuffer='',morseTimeout=null,keyDown=false,keyDownTime=0,iambicSide=null;
+
 const $=id=>document.getElementById(id);
 
 function now(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0')}
 function iA(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume()}
-function tone(d){return new Promise(r=>{if(!ctx||!playing||muted){r();return}const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime);const t=ctx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5,t+.003);g.gain.setValueAtTime(.5,t+d-.003);g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d);o.onended=()=>r()})}
-function slp(ms){return new Promise(r=>{tmr=setTimeout(r,ms)})}
-function lOn(){$('light').classList.add('on')}function lOff(){$('light').classList.remove('on')}
-function togMute(){muted=!muted;$('btnMute').textContent=muted?'🔇':'🔊';$('btnMute').classList.toggle('mu',muted)}
-$('btnMute').addEventListener('click',togMute);
-function togKb(){kbVis=!kbVis;$('keyboard').classList.toggle('vi',kbVis)}
-$('btnKb').addEventListener('click',togKb);
-document.querySelectorAll('.kb-key').forEach(k=>{k.addEventListener('click',()=>{const c=k.dataset.char;const el=mode==='chat'?$('chatIn'):$('txtIn');if(c==='BACK')el.value=el.value.slice(0,-1);else if(c==='ENTER'){if(mode==='chat')sendChat();else el.value+='\n'}else if(c===' ')el.value+=' ';else el.value+=c;el.focus();if(mode==='trans')upT()})});
 
-async function playMS(str,fo=false){
-if(!str||!str.trim())return;iA();playing=!fo;
-const dot=1200/wpm,dash=dot*3,sG=dot,lG=dot*3,wG=dot*7;
-for(const c of str){if(!playing)break;
-if(c==='.'){lOn();if(!fo)await tone(dot/1000);else await slp(dot);lOff()}
-else if(c==='-'){lOn();if(!fo)await tone(dash/1000);else await slp(dash);lOff()}
-else if(c===' '){await slp(lG)}else if(c==='/'){await slp(wG)}else if(c==='\n'){await slp(wG*2)}
-await slp(sG);}
-stopPlay();
+// ============ POPUPS ============
+function closePopups(){document.querySelectorAll('.popup').forEach(p=>p.classList.remove('vi'))}
+function showLogin(){closePopups();$('loginPopup').classList.add('vi')}
+function showRegister(){closePopups();$('registerPopup').classList.add('vi');populateCountries()}
+function showChart(){closePopups();$('chartPopup').classList.add('vi');buildChart()}
+function showTutorial(){$('tutorialPopup').classList.add('vi')}
+function closeTutorial(){if($('dontShowAgain').checked)localStorage.setItem('morse_tutorial_done','1');closePopups()}
+function toggleControls(){$('ctrlPanel').classList.toggle('vi')}
+
+// ============ TUTORIAL AUTO-SHOW ============
+if(!localStorage.getItem('morse_tutorial_done'))$('tutorialPopup').classList.add('vi');
+
+// ============ COUNTRY DROPDOWN ============
+function populateCountries(){
+const sel=$('regCountry');sel.innerHTML='<option value="">Select Country</option>';
+for(const[code,name]of Object.entries(countries))sel.innerHTML+=`<option value="${code}">${code} - ${name}</option>`;
+$('regCountry').addEventListener('change',()=>{$('previewCallsign').textContent=($('regCountry').value||'XX')+'-'+($('regSuffix').value||'XXXXX').toUpperCase()});
+$('regSuffix').addEventListener('input',()=>{$('previewCallsign').textContent=($('regCountry').value||'XX')+'-'+$('regSuffix').value.toUpperCase()});
 }
-function stopPlay(){playing=false;lOff();if(tmr){clearTimeout(tmr);tmr=null}}
 
-function toM(t){return t.toUpperCase().split('').map(c=>MP[c]||'').filter(c=>c).join(' ')}
-function frM(m){const w=m.trim().split(' / ');return w.map(x=>x.split(' ').map(s=>RM[s]||'').join('')).join(' ')}
-let dir='encode';
-function upT(){const v=$('txtIn').value;let r=dir==='encode'?toM(v):frM(v);if(!r.trim()){$('outBox').textContent='Morse code appears here...';$('outBox').classList.add('em')}else{$('outBox').textContent=r;$('outBox').classList.remove('em')}}
-$('txtIn').addEventListener('input',upT);
-$('btnPlay').addEventListener('click',()=>{const m=$('outBox').textContent;if($('outBox').classList.contains('em'))return;if(playing)stopPlay();playMS(m)});
-$('btnStop').addEventListener('click',stopPlay);
-$('btnFlash').addEventListener('click',()=>{const m=$('outBox').textContent;if($('outBox').classList.contains('em'))return;playMS(m,true)});
-$('btnCopy').addEventListener('click',async()=>{const m=$('outBox').textContent;if(!$('outBox').classList.contains('em'))await navigator.clipboard.writeText(m)});
-$('btnSwap').addEventListener('click',()=>{dir=dir==='encode'?'decode':'encode';$('txtIn').value=$('outBox').textContent;upT()});
-$('btnWav').addEventListener('click',()=>{const m=$('outBox').textContent;if($('outBox').classList.contains('em'))return;const sr=8000,dS=Math.floor(sr*(1.2/wpm)),dashS=dS*3,gS=dS;let tot=0;for(const c of m){if(c==='.')tot+=dS+gS;else if(c==='-')tot+=dashS+gS;else if(c===' ')tot+=gS*2;else if(c==='/')tot+=gS*4}const buf=new ArrayBuffer(44+tot*2),v=new DataView(buf);const ws=(v,o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};ws(v,0,'RIFF');v.setUint32(4,36+tot*2,true);ws(v,8,'WAVE');ws(v,12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);ws(v,36,'data');v.setUint32(40,tot*2,true);let off=44;for(let i=0;i<m.length;i++){const c=m[i];let samp=0;if(c==='.')samp=dS;else if(c==='-')samp=dashS;else{let sil=gS;if(c===' ')sil=gS*2;else if(c==='/')sil=gS*4;for(let s=0;s<sil;s++){v.setInt16(off,0,true);off+=2}continue}for(let s=0;s<samp;s++){const val=Math.sin(2*Math.PI*freq*s/sr)*.5*32767;v.setInt16(off,Math.floor(val),true);off+=2}if(i<m.length-1){const n=m[i+1];if(n!==' '&&n!=='/'&&n!=='\n'){for(let s=0;s<gS;s++){v.setInt16(off,0,true);off+=2}}}}const blob=new Blob([buf],{type:'audio/wav'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='morse.wav';a.click();URL.revokeObjectURL(url)});
+// ============ MORSE CHART ============
+function buildChart(){
+let html='';
+for(const[k,v]of Object.entries(MP)){if(k===' ')continue;html+=`<div onclick="playChar('${v}')"><div class="letter">${k}</div><div class="code">${v}</div></div>`}
+$('morseChart').innerHTML=html;
+}
+async function playChar(code){
+iA();playing=true;const dot=1200/wpm;
+for(const c of code){
+if(c==='.'){await tone(dot/1000,keyFreq,keyVol/100)}else if(c==='-'){await tone(dot*3/1000,keyFreq,keyVol/100)}
+await sleep(dot);
+}
+playing=false;
+}
 
-function swM(m){mode=m;if(m==='trans'){$('secT').classList.add('act');$('secC').classList.remove('act');$('btnt').classList.add('act');$('btnc').classList.remove('act')}else{$('secC').classList.add('act');$('secT').classList.remove('act');$('btnc').classList.add('act');$('btnt').classList.remove('act')}}
-$('btnt').addEventListener('click',()=>swM('trans'));$('btnc').addEventListener('click',()=>swM('chat'));
-$('spdS').addEventListener('input',()=>{wpm=parseInt($('spdS').value);$('spdL').textContent=wpm});
-$('freqS').addEventListener('input',()=>{freq=parseInt($('freqS').value);$('freqL').textContent=freq});
-document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='m'){e.preventDefault();togMute()}if(e.ctrlKey&&e.key==='k'){e.preventDefault();togKb()}});
+// ============ AUDIO ============
+function tone(d,f,v){return new Promise(r=>{if(!ctx||muted){r();return}const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(f||keyFreq,ctx.currentTime);const t=ctx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v||.5,t+.003);g.gain.setValueAtTime(v||.5,t+d-.003);g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d);o.onended=()=>r()})}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-// WEBSOCKET
+// ============ MORSE KEY ============
+const mk=$('morseKey');
+mk.addEventListener('mousedown',e=>{e.preventDefault();keyDown=true;keyDownTime=Date.now();mk.classList.add('pressed');if(keyMode==='iambic'){const rect=mk.getBoundingClientRect();iambicSide=(e.clientX<rect.left+rect.width/2)?'left':'right'}startTone()});
+mk.addEventListener('mouseup',()=>{releaseKey()});
+mk.addEventListener('mouseleave',()=>{if(keyDown)releaseKey()});
+mk.addEventListener('touchstart',e=>{e.preventDefault();keyDown=true;keyDownTime=Date.now();mk.classList.add('pressed');startTone()});
+mk.addEventListener('touchend',()=>{releaseKey()});
+
+document.addEventListener('keydown',e=>{
+if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+if(e.code==='Space'){e.preventDefault();if(!keyDown){keyDown=true;keyDownTime=Date.now();mk.classList.add('pressed');startTone()}}
+if(keyMode==='iambic'){
+if(e.code==='KeyZ'){e.preventDefault();iambicSide=paddleOrder==='left'?'left':'right';keyDown=true;keyDownTime=Date.now();startTone()}
+if(e.code==='KeyX'){e.preventDefault();iambicSide=paddleOrder==='left'?'right':'left';keyDown=true;keyDownTime=Date.now();startTone()}
+}
+});
+document.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyX')releaseKey()});
+
+function startTone(){iA();playing=true;lOn()}
+function releaseKey(){
+if(!keyDown)return;
+keyDown=false;playing=false;lOff();mk.classList.remove('pressed');
+const duration=Date.now()-keyDownTime;
+const dotLen=1200/wpm;
+if(duration<dotLen*1.5)morseBuffer+='.';
+else morseBuffer+='-';
+clearTimeout(morseTimeout);
+morseTimeout=setTimeout(flushMorse,submitDelay*50);
+updateMorsePreview();
+}
+function flushMorse(){
+if(!morseBuffer)return;
+const text=morseBuffer;
+morseBuffer='';
+$('morsePreview').textContent='';
+if(!connected)return;
+sendWS({type:'morseMsg',morse:text,text:''});
+addMsg('sent','[Morse: '+text+']');
+}
+function updateMorsePreview(){$('morsePreview').textContent='🔘 '+morseBuffer}
+function lOn(){$('light').classList.add('on');$('light').style.background='#fff'}
+function lOff(){$('light').classList.remove('on');$('light').style.background=''}
+
+// ============ CONNECT ============
 function connectWS(){
 if(ws)try{ws.close()}catch(e){}
 ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host);
-ws.onopen=()=>{connected=true;$('sdot').classList.add('cn');$('stxt').classList.add('cn');$('stxt').textContent='Connected';aSy('📡 Connected to server');if(myName)ws.send(JSON.stringify({type:'setName',name:myName}))};
+ws.onopen=()=>{connected=true;$('sdot').className='sd cn';$('stxt').className='stx cn';$('stxt').textContent='Connected';addSys('📡 Connected to server')};
 ws.onmessage=e=>{
 try{const d=JSON.parse(e.data);
-if(d.type==='welcome'){myId=d.clientId;if(!myName){myName=d.clientName;$('nameDisplay').textContent='You: '+myName}}
-if(d.type==='system')aSy(d.text);
-if(d.type==='msg'){aMsg('received',d.text,d.fromName||d.from);playMS(toM(d.text||''))}
-if(d.type==='pm')aMsg('pm',d.text,'🛡️ ADMIN');
-if(d.type==='nameUpdated'){myName=d.name;$('nameDisplay').textContent='You: '+myName}
+if(d.type==='connection'){
+if(d.state==='connected'){myId=d.clientId;myUsername=d.username;myChannel=d.channel;authenticated=d.authenticated;isAdmin=d.isAdmin;updateUI();updateChannelButtons();addSys('📡 '+d.text);updateUserList(d.channelUsers||[])}
+if(d.state==='denied'){addSys('🚫 '+d.text);$('sdot').className='sd er';$('stxt').className='stx er';$('stxt').textContent='Denied'}
+}
+if(d.type==='channelChanged'){myChannel=d.channel;updateChannelButtons();addSys('📻 Switched to '+d.channel);$('chatLog').innerHTML='';updateUserList(d.channelUsers||[])}
+if(d.type==='channelUsers')updateUserList(d.users||[]);
+if(d.type==='system'&&d.channel===myChannel)addSys(d.text);
+if(d.type==='msg'){if(d.channel===myChannel)addMsg('received',d.text||d.morse,d.fromUsername||'Unknown',d.fromCallsign);playMorseMsg(d.morse||d.text)}
+if(d.type==='morseMsg'){if(d.channel===myChannel)addMsg('received','[Morse] '+d.morse,d.fromUsername||'Unknown',d.fromCallsign);playMorseMsg(d.morse)}
+if(d.type==='pm')addMsg('pm',d.text,'ADMIN');
+if(d.type==='loginResult'&&d.success){authenticated=true;myCallsign=d.callsign;myUsername=d.username;closePopups();updateUI();addSys('✅ Logged in as '+d.callsign)}
+if(d.type==='registerResult'&&d.success){authenticated=true;myCallsign=d.callsign;myUsername=d.username;closePopups();updateUI();addSys('✅ Registered: '+d.callsign)}
+if(d.type==='loginResult'&&!d.success)$('loginErr').textContent=d.text;
+if(d.type==='registerResult'&&!d.success)$('regErr').textContent=d.text;
 }catch(err){}
 };
-ws.onclose=()=>{connected=false;$('sdot').classList.remove('cn');$('stxt').classList.remove('cn');$('stxt').textContent='Reconnecting...';setTimeout(connectWS,2000)};
+ws.onclose=()=>{connected=false;$('sdot').className='sd';$('stxt').className='stx';$('stxt').textContent='Reconnecting...';setTimeout(connectWS,2000)};
 }
-connectWS();
 function sendWS(msg){if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(msg))}
 
-// CHAT FUNCTIONS
-function aMsg(type,text,from){
-const d=document.createElement('div');
-d.className='msg '+(type==='sent'?'ms':type==='received'?'mr':type==='pm'?'mp':'my');
-const label=type==='sent'?'📤 YOU':type==='pm'?'🔒 PM FROM '+(from||'ADMIN'):'📥 '+(from||'Unknown');
-const morse=toM(text||'');
-d.innerHTML=`
-<div class="ml">${label}<span class="mtick">${now()}</span></div>
-${morse?`<div class="mm">${morse}</div>`:''}
-<div class="mtx">${text}</div>`;
+// ============ UI ============
+function updateUI(){
+$('userInfo').textContent=authenticated?myCallsign||myUsername:'Guest';
+$('btnLogin').style.display=authenticated?'none':'inline-block';
+$('btnLogout').style.display=authenticated?'inline-block':'none';
+}
+function updateChannelButtons(){document.querySelectorAll('.ch-btn').forEach(b=>b.classList.toggle('act',b.dataset.ch===myChannel))}
+function updateUserList(users){
+let html='';
+users.forEach(u=>{html+=`<div class="user-item" onclick="showProfile('${u.username||'Unknown'}','${u.callsign||''}','${u.country||''}','${u.channel||''}')"><span class="dot"></span><span class="uname">${u.username||u.callsign||'Unknown'}</span><span class="csign">${u.callsign||''}</span></div>`});
+$('userList').innerHTML=html||'<div style="color:#444;font-size:.45rem">No users</div>';
+}
+function showProfile(uname,csign,country,ch){
+$('profileContent').innerHTML=`<p><b>Username:</b> ${uname}</p><p><b>Callsign:</b> ${csign||'N/A'}</p><p><b>Country:</b> ${country||'N/A'}</p><p><b>Channel:</b> ${ch||'N/A'}</p>`;
+$('profilePopup').classList.add('vi');
+}
+
+// ============ CHAT ============
+function addMsg(type,text,from,callsign){
+const d=document.createElement('div');d.className='msg '+(type==='sent'?'ms':type==='received'?'mr':type==='pm'?'mp':'my');
+const label=type==='sent'?'📤 YOU':type==='pm'?'🔒 PM':'📥 '+(from||'Unknown');
+const morse=text&&!text.startsWith('[Morse')?toMorse(text):'';
+d.innerHTML=`<div class="ml" onclick="if('${callsign||''}')showProfile('${from||''}','${callsign||''}','','${myChannel}')"><span class="ch-tag">${myChannel}</span> ${label}${callsign?' <span style="color:#888;font-size:.4rem">('+callsign+')</span>':''}<span class="mtick">${now()}</span></div>${showLetters&&morse?`<div class="mm">${morse}</div>`:''}<div class="mtx">${text}</div>`;
 $('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight;
 }
-function aSy(text){const d=document.createElement('div');d.className='msg my';d.innerHTML=text;$('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight;}
-
+function addSys(text){const d=document.createElement('div');d.className='msg my';d.textContent=text;$('chatLog').appendChild(d);$('chatLog').scrollTop=$('chatLog').scrollHeight}
+function toMorse(t){return t.toUpperCase().split('').map(c=>MP[c]||'').filter(c=>c).join(' ')}
+async function playMorseMsg(str){
+if(!str||muted)return;
+const morse=str.startsWith('[Morse')?str.replace('[Morse] ','').trim():toMorse(str);
+iA();const dot=1200/wpm;
+for(const c of morse){
+if(c==='.'){await tone(dot/1000,keyFreq,recVol/100)}else if(c==='-'){await tone(dot*3/1000,keyFreq,recVol/100)}else await sleep(dot);
+await sleep(dot);
+}
+}
 function sendChat(){
 const text=$('chatIn').value.trim();if(!text||!connected)return;
-sendWS({type:'msg',text:text});
-aMsg('sent',text,myName);
+sendWS({type:'msg',text:text,morse:toMorse(text)});
+addMsg('sent',text,myUsername,myCallsign);
 $('chatIn').value='';$('chatIn').focus();
 }
+
+// ============ LOGIN/REGISTER ============
+function doLogin(){const u=$('loginUser').value.trim();const p=$('loginPass').value;if(!u||!p)return;sendWS({type:'login',username:u,password:p})}
+function doRegister(){
+const u=$('regUser').value.trim();const p=$('regPass').value;const c=$('regCountry').value;const s=$('regSuffix').value.trim();
+if(!u||!p||!c||!s||s.length!==5){$('regErr').textContent='All fields required. Suffix=5 chars.';return}
+sendWS({type:'register',username:u,password:p,country:c,callsignSuffix:s});
+}
+function doLogout(){authenticated=false;myCallsign='';myUsername='OP'+myId;updateUI();addSys('Logged out')}
+
+// ============ CHANNELS ============
+document.querySelectorAll('.ch-btn').forEach(b=>b.addEventListener('click',()=>{const ch=b.dataset.ch;if(ch===myChannel)return;sendWS({type:'joinChannel',channel:ch})}));
+
+// ============ CONTROLS ============
+$('wpmSlider').addEventListener('input',()=>{wpm=parseInt($('wpmSlider').value);$('wpmVal').textContent=wpm});
+$('recVol').addEventListener('input',()=>{recVol=parseInt($('recVol').value);$('recVolVal').textContent=recVol});
+$('keyVol').addEventListener('input',()=>{keyVol=parseInt($('keyVol').value);$('keyVolVal').textContent=keyVol});
+$('keyFreq').addEventListener('input',()=>{keyFreq=parseInt($('keyFreq').value);$('keyFreqVal').textContent=keyFreq+'Hz'});
+$('submitDelay').addEventListener('input',()=>{submitDelay=parseInt($('submitDelay').value);$('submitDelayVal').textContent=submitDelay});
+$('keyMode').addEventListener('change',()=>{keyMode=$('keyMode').value});
+$('paddleOrder').addEventListener('change',()=>{paddleOrder=$('paddleOrder').value});
+$('showLetters').addEventListener('change',()=>{showLetters=$('showLetters').value==='on'});
+
+// ============ BUTTONS ============
 $('btnChatSend').addEventListener('click',sendChat);
 $('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat()}});
 $('btnChatClear').addEventListener('click',()=>{$('chatLog').innerHTML=''});
-$('btnTest').addEventListener('click',()=>{if(!connected)return;sendWS({type:'test'});aMsg('sent','TEST SIGNAL',myName);playMS('... --- ...')});
-$('btnSetName').addEventListener('click',()=>{const n=$('nameInput').value.trim();if(!n)return;myName=n;$('nameDisplay').textContent='You: '+n;$('nameInput').value='';sendWS({type:'setName',name:n})});
-$('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnSetName').click()});
-upT();
+$('btnTest').addEventListener('click',()=>{sendWS({type:'test'});addMsg('sent','TEST SIGNAL',myUsername,myCallsign);playMorseMsg('... --- ...')});
+$('btnMute').addEventListener('click',()=>{muted=!muted;$('btnMute').textContent=muted?'🔇':'🔊'});
+
+// ============ START ============
+connectWS();
+updateUI();
 </script>
 </body>
 </html>
