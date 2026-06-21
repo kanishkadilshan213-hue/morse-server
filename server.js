@@ -40,11 +40,10 @@ function getClientsList() {
                 id: data.id,
                 name: data.name,
                 displayName: data.displayName,
+                channel: data.channel,
                 ip: data.isAdmin ? 'localhost' : data.ip,
                 isAdmin: data.isAdmin,
-                connectedAt: data.connectedAt,
-                muted: mutedClients.has(data.id),
-                messages: data.messageCount
+                muted: mutedClients.has(data.id)
             });
         }
     });
@@ -53,18 +52,26 @@ function getClientsList() {
 
 function broadcastToAll(msg) {
     const str = JSON.stringify(msg);
-    wss.clients.forEach(c => {
-        if (c.readyState === WebSocket.OPEN) {
-            try { c.send(str); } catch (e) {}
+    wss.clients.forEach(c => { if (c.readyState === WebSocket.OPEN) try { c.send(str); } catch (e) {} });
+}
+
+function broadcastToChannel(channel, msg) {
+    const str = JSON.stringify(msg);
+    clients.forEach((data, ws) => {
+        if (data.channel === channel && ws.readyState === WebSocket.OPEN) {
+            try { ws.send(str); } catch (e) {}
         }
     });
 }
 
 function broadcastExcept(sender, msg) {
     const str = JSON.stringify(msg);
-    wss.clients.forEach(c => {
-        if (c !== sender && c.readyState === WebSocket.OPEN) {
-            try { c.send(str); } catch (e) {}
+    const senderData = clients.get(sender);
+    const channel = senderData ? senderData.channel : null;
+    if (!channel) return;
+    clients.forEach((data, ws) => {
+        if (ws !== sender && data.channel === channel && ws.readyState === WebSocket.OPEN) {
+            try { ws.send(str); } catch (e) {}
         }
     });
 }
@@ -81,7 +88,7 @@ function sendToClient(clientId, msg) {
 function kickClient(clientId) {
     clients.forEach((data, ws) => {
         if (data.id === clientId) {
-            try { ws.send(JSON.stringify({ type: 'kicked', text: 'You have been kicked by the admin.' })); } catch (e) {}
+            try { ws.send(JSON.stringify({ type: 'kicked', text: 'Kicked by admin.' })); } catch (e) {}
             setTimeout(() => { try { ws.close(); } catch (e) {} }, 500);
         }
     });
@@ -92,20 +99,16 @@ function banClient(clientId) {
     clients.forEach((data, ws) => {
         if (data.id === clientId) {
             ip = data.ip;
-            try { ws.send(JSON.stringify({ type: 'banned', text: 'You have been banned.' })); } catch (e) {}
+            try { ws.send(JSON.stringify({ type: 'banned', text: 'Banned.' })); } catch (e) {}
             setTimeout(() => { try { ws.close(); } catch (e) {} }, 500);
         }
     });
     if (ip) bannedIPs.add(ip);
 }
 
-// Clean up dead connections periodically
 setInterval(() => {
     clients.forEach((data, ws) => {
-        if (ws.readyState !== WebSocket.OPEN) {
-            clients.delete(ws);
-            mutedClients.delete(data.id);
-        }
+        if (ws.readyState !== WebSocket.OPEN) { clients.delete(ws); mutedClients.delete(data.id); }
     });
 }, 30000);
 
@@ -114,7 +117,7 @@ wss.on('connection', (ws, req) => {
     const isLocalhost = (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1');
     
     if (bannedIPs.has(ip) && !isLocalhost) {
-        ws.send(JSON.stringify({ type: 'banned', text: 'You are banned from this server.' }));
+        ws.send(JSON.stringify({ type: 'banned', text: 'Banned.' }));
         setTimeout(() => { try { ws.close(); } catch (e) {} }, 1000);
         return;
     }
@@ -126,26 +129,29 @@ wss.on('connection', (ws, req) => {
         id: clientId,
         name: defaultName,
         displayName: defaultName,
+        channel: 'CH1',
         ip: ip,
         isAdmin: isLocalhost,
         connectedAt: new Date().toISOString(),
         messageCount: 0
     });
     
-    console.log(`📡 ${defaultName} (${clientId}) connected. ${clients.size} online.`);
+    console.log(`📡 ${defaultName} (${clientId}) on CH1. ${clients.size} online.`);
     
     ws.send(JSON.stringify({
         type: 'welcome',
-        text: `Connected! ${clients.size} client(s) online.`,
+        text: `Connected! Channel: CH1`,
         clientId: clientId,
         clientName: defaultName,
+        channel: 'CH1',
         isAdmin: isLocalhost,
         clients: getClientsList()
     }));
     
-    broadcastExcept(ws, {
+    broadcastToChannel('CH1', {
         type: 'system',
-        text: `${defaultName} joined. ${clients.size} online.`
+        text: `${defaultName} joined CH1.`,
+        channel: 'CH1'
     });
     
     broadcastToAll({ type: 'clientList', clients: getClientsList() });
@@ -158,102 +164,80 @@ wss.on('connection', (ws, req) => {
             
             msg.from = clientId;
             msg.fromName = clientData.displayName || clientData.name;
+            msg.channel = clientData.channel;
             msg.timestamp = Date.now();
             
-            // Set username
             if (msg.type === 'setName') {
                 if (msg.name && msg.name.trim().length > 0 && msg.name.trim().length <= 20) {
-                    const oldName = clientData.displayName;
+                    const old = clientData.displayName;
                     clientData.name = msg.name.trim();
                     clientData.displayName = msg.name.trim();
-                    broadcastToAll({ type: 'system', text: `${oldName} is now known as ${clientData.displayName}.` });
-                    ws.send(JSON.stringify({ type: 'nameUpdated', name: clientData.displayName, isAdmin: clientData.isAdmin }));
+                    broadcastToChannel(clientData.channel, { type: 'system', text: `${old} → ${clientData.displayName}`, channel: clientData.channel });
+                    ws.send(JSON.stringify({ type: 'nameUpdated', name: clientData.displayName }));
                     broadcastToAll({ type: 'clientList', clients: getClientsList() });
                 }
                 return;
             }
             
-            // Check muted
+            if (msg.type === 'joinChannel') {
+                const newCh = msg.channel;
+                if (['CH1','CH2','CH3','CH4'].includes(newCh) && newCh !== clientData.channel) {
+                    const oldCh = clientData.channel;
+                    clientData.channel = newCh;
+                    broadcastToChannel(oldCh, { type: 'system', text: `${clientData.displayName} left ${oldCh}`, channel: oldCh });
+                    broadcastToChannel(newCh, { type: 'system', text: `${clientData.displayName} joined ${newCh}`, channel: newCh });
+                    ws.send(JSON.stringify({ type: 'channelChanged', channel: newCh }));
+                    broadcastToAll({ type: 'clientList', clients: getClientsList() });
+                }
+                return;
+            }
+            
             if (mutedClients.has(clientId) && (msg.type === 'msg' || msg.type === 'test')) {
-                ws.send(JSON.stringify({ type: 'system', text: 'You are muted.' }));
-                // Tell admin that muted person tried to talk
-                broadcastToAll({ type: 'muted-notice', from: clientId, fromName: clientData.displayName, text: msg.text });
+                ws.send(JSON.stringify({ type: 'system', text: 'You are muted.', channel: clientData.channel }));
                 return;
             }
             
             // ADMIN COMMANDS
-            if (msg.type === 'admin-login') {
-                if (msg.password === ADMIN_PASSWORD) {
-                    ws.send(JSON.stringify({ type: 'admin-auth', success: true, clients: getClientsList(), log: messageLog.slice(-50), bannedIPs: Array.from(bannedIPs) }));
-                } else {
-                    ws.send(JSON.stringify({ type: 'admin-auth', success: false, text: 'Wrong password' }));
-                }
+            if (msg.type === 'admin-login' && msg.password === ADMIN_PASSWORD) {
+                ws.send(JSON.stringify({ type: 'admin-auth', success: true, clients: getClientsList(), log: messageLog.slice(-50), bannedIPs: Array.from(bannedIPs) }));
                 return;
             }
-            
-            if (msg.type === 'admin-kick' && msg.adminPassword === ADMIN_PASSWORD) { kickClient(msg.targetId); broadcastToAll({ type: 'system', text: `Client ${msg.targetId} was kicked.` }); return; }
-            if (msg.type === 'admin-ban' && msg.adminPassword === ADMIN_PASSWORD) { banClient(msg.targetId); broadcastToAll({ type: 'system', text: `Client ${msg.targetId} was banned.` }); return; }
-            
+            if (msg.type === 'admin-kick' && msg.adminPassword === ADMIN_PASSWORD) { kickClient(msg.targetId); broadcastToAll({ type: 'system', text: `Client ${msg.targetId} kicked.` }); return; }
+            if (msg.type === 'admin-ban' && msg.adminPassword === ADMIN_PASSWORD) { banClient(msg.targetId); broadcastToAll({ type: 'system', text: `Client ${msg.targetId} banned.` }); return; }
             if (msg.type === 'admin-mute' && msg.adminPassword === ADMIN_PASSWORD) {
-                if (mutedClients.has(msg.targetId)) {
-                    mutedClients.delete(msg.targetId);
-                    sendToClient(msg.targetId, { type: 'system', text: 'You have been unmuted.' });
-                } else {
-                    mutedClients.add(msg.targetId);
-                    sendToClient(msg.targetId, { type: 'system', text: 'You have been muted by admin.' });
-                }
+                if (mutedClients.has(msg.targetId)) { mutedClients.delete(msg.targetId); sendToClient(msg.targetId, { type: 'system', text: 'Unmuted.' }); }
+                else { mutedClients.add(msg.targetId); sendToClient(msg.targetId, { type: 'system', text: 'Muted.' }); }
                 broadcastToAll({ type: 'clientList', clients: getClientsList() });
                 return;
             }
-            
             if (msg.type === 'admin-broadcast' && msg.adminPassword === ADMIN_PASSWORD) { broadcastToAll({ type: 'system', text: `📢 ADMIN: ${msg.text}` }); return; }
-            if (msg.type === 'admin-pm' && msg.adminPassword === ADMIN_PASSWORD) { sendToClient(msg.targetId, { type: 'pm', text: msg.text, from: 'ADMIN', fromName: '🛡️ ADMIN' }); ws.send(JSON.stringify({ type: 'pm-sent', text: msg.text, targetId: msg.targetId })); return; }
-            if (msg.type === 'admin-unban' && msg.adminPassword === ADMIN_PASSWORD) { bannedIPs.delete(msg.ip); broadcastToAll({ type: 'system', text: `IP ${msg.ip} was unbanned.` }); return; }
+            if (msg.type === 'admin-pm' && msg.adminPassword === ADMIN_PASSWORD) { sendToClient(msg.targetId, { type: 'pm', text: msg.text, from: 'ADMIN' }); return; }
+            if (msg.type === 'admin-unban' && msg.adminPassword === ADMIN_PASSWORD) { bannedIPs.delete(msg.ip); broadcastToAll({ type: 'system', text: `IP ${msg.ip} unbanned.` }); return; }
             
-            // Regular message — broadcast to everyone except sender
+            // Regular message
             clientData.messageCount++;
-            messageLog.push({ from: clientId, fromName: clientData.displayName, type: msg.type, text: msg.text || '', time: new Date().toISOString() });
+            messageLog.push({ from: clientId, fromName: clientData.displayName, channel: clientData.channel, type: msg.type, text: msg.text || '', time: new Date().toISOString() });
             if (messageLog.length > 200) messageLog.shift();
             
-            console.log(`📨 ${clientData.displayName}: ${msg.text || msg.type}`);
+            console.log(`📨 [${clientData.channel}] ${clientData.displayName}: ${msg.text || msg.type}`);
             broadcastExcept(ws, msg);
             
-        } catch (e) { console.log('Invalid message:', e.message); }
+        } catch (e) { console.log('Error:', e.message); }
     });
     
     ws.on('close', () => {
         const clientData = clients.get(ws);
         const name = clientData?.displayName || 'Unknown';
+        const ch = clientData?.channel || 'CH1';
         clients.delete(ws);
         mutedClients.delete(clientId);
-        console.log(`👋 ${name} left. ${clients.size} online.`);
-        broadcastToAll({ type: 'system', text: `${name} left. ${clients.size} online.` });
+        broadcastToChannel(ch, { type: 'system', text: `${name} left ${ch}.`, channel: ch });
         broadcastToAll({ type: 'clientList', clients: getClientsList() });
     });
     
-    ws.on('error', (err) => {
-        console.log('WebSocket error:', err.message);
-        clients.delete(ws);
-        mutedClients.delete(clientId);
-    });
+    ws.on('error', () => { clients.delete(ws); mutedClients.delete(clientId); });
 });
 
 server.listen(PORT, () => {
-    console.log('');
-    console.log('═══════════════════════════════════');
-    console.log('  📻 MORSE CHAT SERVER v2');
-    console.log('═══════════════════════════════════');
-    console.log(`  Local: http://localhost:${PORT}`);
-    console.log(`  Admin: http://localhost:${PORT}/admin`);
-    const ifaces = os.networkInterfaces();
-    for (const name of Object.keys(ifaces)) {
-        for (const iface of ifaces[name]) {
-            if (iface.family === 'IPv4' && !iface.internal) {
-                console.log(`  Network: http://${iface.address}:${PORT}`);
-            }
-        }
-    }
-    console.log(`  Admin Password: ${ADMIN_PASSWORD}`);
-    console.log('  Press Ctrl+C to stop');
-    console.log('═══════════════════════════════════');
+    console.log('📻 Morse Server with Channels on port', PORT);
 });
