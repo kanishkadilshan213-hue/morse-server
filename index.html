@@ -105,7 +105,7 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 <p>⚙️ <b>Controls:</b> Adjust WPM, volume, pitch</p>
 </div>
 <p style="font-size:.55rem;color:var(--ac);margin-top:8px">📧 kanishkadilshan213@gmail.com</p>
-<label style="font-size:.5rem;color:#888"><input type="checkbox" id="dontShowAgain"> Don't show this again</label>
+<label for="dontShowAgain" style="font-size:.5rem;color:#888"><input type="checkbox" id="dontShowAgain"> Don't show this again</label>
 <button onclick="closeTutorial()">Get Started</button>
 </div>
 </div>
@@ -160,14 +160,14 @@ button{padding:4px 7px;border:none;border-radius:3px;cursor:pointer;font-family:
 </div>
 
 <div class="control-panel" id="ctrlPanel">
-<div class="cp-row"><label>WPM:</label><input type="range" id="wpmSlider" min="5" max="40" value="18"><span id="wpmVal">18</span></div>
-<div class="cp-row"><label>Rec Volume:</label><input type="range" id="recVol" min="0" max="100" value="50"><span id="recVolVal">50</span></div>
-<div class="cp-row"><label>Key Volume:</label><input type="range" id="keyVol" min="0" max="100" value="50"><span id="keyVolVal">50</span></div>
-<div class="cp-row"><label>Key Freq:</label><input type="range" id="keyFreq" min="400" max="1200" value="600"><span id="keyFreqVal">600Hz</span></div>
-<div class="cp-row"><label>Submit Delay:</label><input type="range" id="submitDelay" min="5" max="30" value="12"><span id="submitDelayVal">12</span></div>
-<div class="cp-row"><label>Key Mode:</label><select id="keyMode"><option value="straight">Straight</option><option value="iambic">Iambic A</option></select></div>
-<div class="cp-row"><label>Paddle Order:</label><select id="paddleOrder"><option value="left">Left = Dit</option><option value="right">Right = Dit</option></select></div>
-<div class="cp-row"><label>Show Letters:</label><select id="showLetters"><option value="on">On</option><option value="off">Off</option></select></div>
+<div class="cp-row"><label for="wpmSlider">WPM:</label><input type="range" id="wpmSlider" min="5" max="40" value="18"><span id="wpmVal">18</span></div>
+<div class="cp-row"><label for="recVol">Rec Volume:</label><input type="range" id="recVol" min="0" max="100" value="50"><span id="recVolVal">50</span></div>
+<div class="cp-row"><label for="keyVol">Key Volume:</label><input type="range" id="keyVol" min="0" max="100" value="50"><span id="keyVolVal">50</span></div>
+<div class="cp-row"><label for="keyFreq">Key Freq:</label><input type="range" id="keyFreq" min="400" max="1200" value="600"><span id="keyFreqVal">600Hz</span></div>
+<div class="cp-row"><label for="submitDelay">Submit Delay:</label><input type="range" id="submitDelay" min="5" max="30" value="12"><span id="submitDelayVal">12</span></div>
+<div class="cp-row"><label for="keyMode">Key Mode:</label><select id="keyMode"><option value="straight">Straight</option><option value="iambic">Iambic A</option></select></div>
+<div class="cp-row"><label for="paddleOrder">Paddle Order:</label><select id="paddleOrder"><option value="left">Left = Dit</option><option value="right">Right = Dit</option></select></div>
+<div class="cp-row"><label for="showLetters">Show Letters:</label><select id="showLetters"><option value="on">On</option><option value="off">Off</option></select></div>
 </div>
 
 <div class="footer">📻 Morse Center v3 | 📧 kanishkadilshan213@gmail.com</div>
@@ -211,11 +211,9 @@ async function playChar(code){iA();playing=true;const dot=1200/wpm;for(const c o
 function tone(d,f,v){return new Promise(r=>{if(!ctx||muted){r();return}const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(f||keyFreq,ctx.currentTime);const t=ctx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v||.5,t+.003);g.gain.setValueAtTime(v||.5,t+d-.003);g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d);o.onended=()=>r()})}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-// MORSE CONVERSION
 function toMorse(t){return t.toUpperCase().split('').map(c=>MP[c]||'').filter(c=>c).join(' ')}
 function morseToText(m){if(!m)return'';const words=m.trim().split(' / ');return words.map(w=>w.split(' ').map(s=>RM[s]||'').join('')).join(' ');}
 
-// MORSE KEY
 const mk=$('morseKey');
 mk.addEventListener('mousedown',e=>{e.preventDefault();keyDown=true;keyDownTime=Date.now();mk.classList.add('pressed');if(keyMode==='iambic'){const rect=mk.getBoundingClientRect();iambicSide=(e.clientX<rect.left+rect.width/2)?'left':'right'}startTone()});
 mk.addEventListener('mouseup',()=>{releaseKey()});
@@ -247,7 +245,6 @@ function updateMorsePreview(){$('morsePreview').textContent='🔘 '+morseBuffer}
 function lOn(){$('light').classList.add('on');$('light').style.background='#fff'}
 function lOff(){$('light').classList.remove('on');$('light').style.background=''}
 
-// WEBSOCKET
 function connectWS(){
 if(ws)try{ws.close()}catch(e){}
 ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host);
@@ -274,13 +271,11 @@ ws.onclose=()=>{connected=false;$('sdot').className='sd';$('stxt').className='st
 }
 function sendWS(msg){if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(msg))}
 
-// UI
 function updateUI(){$('userInfo').textContent=authenticated?myCallsign||myUsername:'Guest';$('btnLogin').style.display=authenticated?'none':'inline-block';$('btnLogout').style.display=authenticated?'inline-block':'none'}
 function updateChannelButtons(){document.querySelectorAll('.ch-btn').forEach(b=>b.classList.toggle('act',b.dataset.ch===myChannel))}
 function updateUserList(users){let html='';users.forEach(u=>{html+=`<div class="user-item" onclick="showProfile('${u.username||'Unknown'}','${u.callsign||''}','${u.country||''}','${u.channel||''}')"><span class="dot"></span><span class="uname">${u.username||u.callsign||'Unknown'}</span><span class="csign">${u.callsign||''}</span></div>`});$('userList').innerHTML=html||'<div style="color:#444;font-size:.45rem">No users</div>'}
 function showProfile(uname,csign,country,ch){$('profileContent').innerHTML=`<p><b>Username:</b> ${uname}</p><p><b>Callsign:</b> ${csign||'N/A'}</p><p><b>Country:</b> ${country||'N/A'}</p><p><b>Channel:</b> ${ch||'N/A'}</p>`;$('profilePopup').classList.add('vi')}
 
-// CHAT
 function addMsg(type,text,from,callsign,morseOverride){
 const d=document.createElement('div');d.className='msg '+(type==='sent'?'ms':type==='received'?'mr':type==='pm'?'mp':'my');
 const label=type==='sent'?'📤 YOU':type==='pm'?'🔒 PM':'📥 '+(from||'Unknown');
@@ -303,15 +298,12 @@ sendWS({type:'msg',text:text,morse:toMorse(text)});
 addMsg('sent',text,myUsername,myCallsign);$('chatIn').value='';$('chatIn').focus();
 }
 
-// LOGIN
 function doLogin(){const u=$('loginUser').value.trim();const p=$('loginPass').value;if(!u||!p)return;sendWS({type:'login',username:u,password:p})}
 function doRegister(){const u=$('regUser').value.trim();const p=$('regPass').value;const c=$('regCountry').value;const s=$('regSuffix').value.trim();if(!u||!p||!c||!s||s.length!==5){$('regErr').textContent='All fields required. Suffix=5 chars.';return}sendWS({type:'register',username:u,password:p,country:c,callsignSuffix:s})}
 function doLogout(){authenticated=false;myCallsign='';myUsername='OP'+myId;updateUI();addSys('Logged out')}
 
-// CHANNELS
 document.querySelectorAll('.ch-btn').forEach(b=>b.addEventListener('click',()=>{const ch=b.dataset.ch;if(ch===myChannel)return;sendWS({type:'joinChannel',channel:ch})}));
 
-// CONTROLS
 $('wpmSlider').addEventListener('input',()=>{wpm=parseInt($('wpmSlider').value);$('wpmVal').textContent=wpm});
 $('recVol').addEventListener('input',()=>{recVol=parseInt($('recVol').value);$('recVolVal').textContent=recVol});
 $('keyVol').addEventListener('input',()=>{keyVol=parseInt($('keyVol').value);$('keyVolVal').textContent=keyVol});
@@ -321,7 +313,6 @@ $('keyMode').addEventListener('change',()=>{keyMode=$('keyMode').value});
 $('paddleOrder').addEventListener('change',()=>{paddleOrder=$('paddleOrder').value});
 $('showLetters').addEventListener('change',()=>{showLetters=$('showLetters').value==='on'});
 
-// BUTTONS
 $('btnChatSend').addEventListener('click',sendChat);
 $('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat()}});
 $('btnChatClear').addEventListener('click',()=>{$('chatLog').innerHTML=''});
